@@ -67,7 +67,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	.andExpect(jsonPath("$.firstName", is(testPerson.getFirstName())))
     	.andExpect(jsonPath("$.lastName", is(testPerson.getLastName())))
     	.andExpect(jsonPath("$.dateOfBirth", isA(String.class)))
-    	.andReturn();
+    	.andReturn()
     	;
     	
     	logger.debug("content="+ result.getResponse().getContentAsString());
