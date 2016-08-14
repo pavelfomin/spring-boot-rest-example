@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
-public class ActuatorEndpointTest extends BaseEndpointTest {
+public class SwaggerEndpointTest extends BaseEndpointTest {
 
     @Before
     public void setup() throws Exception {
@@ -25,16 +25,15 @@ public class ActuatorEndpointTest extends BaseEndpointTest {
     }
 
     @Test
-    public void getInfo() throws Exception {
+    public void getApiDocs() throws Exception {
     	
-    	MvcResult result = mockMvc.perform(get("/info"))
+    	MvcResult result = mockMvc.perform(get("/v2/api-docs"))
     	.andExpect(status().isOk())
     	.andExpect(content().contentType(JSON_MEDIA_TYPE))
-    	.andExpect(jsonPath("$.build", isA(Object.class)))
-    	.andExpect(jsonPath("$.build.version", isA(String.class)))
-    	.andExpect(jsonPath("$.build.artifact", is("spring-boot-rest-example")))
-    	.andExpect(jsonPath("$.build.group", is("com.droidablebee")))
-    	.andExpect(jsonPath("$.build.time", isA(String.class)))
+    	.andExpect(jsonPath("$.swagger", is("2.0")))
+    	.andExpect(jsonPath("$.info", isA(Object.class)))
+    	.andExpect(jsonPath("$.paths", isA(Object.class)))
+    	.andExpect(jsonPath("$.definitions", isA(Object.class)))
     	.andReturn()
     	;
     	
@@ -42,18 +41,11 @@ public class ActuatorEndpointTest extends BaseEndpointTest {
     }
 
     @Test
-    public void getHealth() throws Exception {
+    public void getSwaggerHtml() throws Exception {
     	
-    	MvcResult result = mockMvc.perform(get("/health"))
+    	mockMvc.perform(get("/swagger-ui.html"))
     			.andExpect(status().isOk())
-    			.andExpect(content().contentType(JSON_MEDIA_TYPE))
-    			.andExpect(jsonPath("$.status", is("UP")))
-    			.andExpect(jsonPath("$.diskSpace.status", is("UP")))
-    			.andExpect(jsonPath("$.db.status", is("UP")))
-    			.andReturn()
     			;
-    	
-    	logger.debug("content="+ result.getResponse().getContentAsString());
     }
     
 }
