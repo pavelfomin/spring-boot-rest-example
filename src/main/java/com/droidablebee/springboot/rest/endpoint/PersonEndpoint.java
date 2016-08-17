@@ -1,10 +1,5 @@
 package com.droidablebee.springboot.rest.endpoint;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.droidablebee.springboot.rest.domain.Person;
 import com.droidablebee.springboot.rest.service.PersonService;
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
@@ -78,4 +80,8 @@ public class PersonEndpoint {
     	return ResponseEntity.ok().body(person);
     }
     
+    @InitBinder("person")
+    protected void initBinder(WebDataBinder binder) {
+        binder.setValidator(new PersonValidator());
+    }
 }

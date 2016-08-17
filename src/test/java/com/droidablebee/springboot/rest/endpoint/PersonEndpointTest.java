@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -71,6 +72,47 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	;
     	
     	logger.debug("content="+ result.getResponse().getContentAsString());
+    }
+
+    /**
+     * Test JSR-303 bean validation. 
+     */
+    @Test
+    public void createPersonValidationErrorLastName() throws Exception {
+    	
+    	//person with missing last name
+    	Person person = createPerson("first", null);
+    	person.setMiddleName("middle");
+    	String content = json(person);
+		mockMvc.perform(
+				put("/v1/person")
+				.accept(JSON_MEDIA_TYPE)
+				.content(content)
+				.contentType(JSON_MEDIA_TYPE))
+		.andExpect(status().isBadRequest())
+//		.andExpect(content().contentType(JSON_MEDIA_TYPE))
+//		.andExpect(jsonPath("$.exception", is("org.springframework.web.bind.MethodArgumentNotValidException")))
+		;
+    }
+
+    /**
+     * Test custom bean validation. 
+     */
+    @Test
+    public void createPersonValidationErrorMiddleName() throws Exception {
+    	
+    	//person with missing middle name - custom validation
+    	Person person = createPerson("first", "last");
+    	String content = json(person);
+		mockMvc.perform(
+				put("/v1/person")
+				.accept(JSON_MEDIA_TYPE)
+				.content(content)
+				.contentType(JSON_MEDIA_TYPE))
+		.andExpect(status().isBadRequest())
+//		.andExpect(content().contentType(JSON_MEDIA_TYPE))
+//		.andExpect(jsonPath("$.exception", is("org.springframework.web.bind.MethodArgumentNotValidException")))
+		;
     }
 
 	private Person createPerson(String first, String last) {
