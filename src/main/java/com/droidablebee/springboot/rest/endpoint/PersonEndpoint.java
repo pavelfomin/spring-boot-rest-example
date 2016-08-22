@@ -82,6 +82,6 @@ public class PersonEndpoint {
     
     @InitBinder("person")
     protected void initBinder(WebDataBinder binder) {
-        binder.setValidator(new PersonValidator());
+        binder.addValidators(new PersonValidator());
     }
 }
