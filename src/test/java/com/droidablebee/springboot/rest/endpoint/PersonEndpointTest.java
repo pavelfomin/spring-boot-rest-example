@@ -67,7 +67,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	.andExpect(jsonPath("$.id", is(id.intValue())))
     	.andExpect(jsonPath("$.firstName", is(testPerson.getFirstName())))
     	.andExpect(jsonPath("$.lastName", is(testPerson.getLastName())))
-    	.andExpect(jsonPath("$.dateOfBirth", isA(String.class)))
+    	.andExpect(jsonPath("$.dateOfBirth", isA(Number.class)))
     	.andReturn()
     	;
     	
@@ -112,6 +112,29 @@ public class PersonEndpointTest extends BaseEndpointTest {
 		.andExpect(status().isBadRequest())
 //		.andExpect(content().contentType(JSON_MEDIA_TYPE))
 //		.andExpect(jsonPath("$.exception", is("org.springframework.web.bind.MethodArgumentNotValidException")))
+		;
+    }
+
+    @Test
+    public void createPerson() throws Exception {
+    	
+    	//person with missing middle name - custom validation
+    	Person person = createPerson("first", "last");
+    	person.setMiddleName("middleName");
+
+    	String content = json(person);
+		
+    	mockMvc.perform(
+				put("/v1/person")
+				.accept(JSON_MEDIA_TYPE)
+				.content(content)
+				.contentType(JSON_MEDIA_TYPE))
+		.andExpect(status().isOk())
+    	.andExpect(jsonPath("$.id", isA(Number.class)))
+    	.andExpect(jsonPath("$.firstName", is(person.getFirstName())))
+    	.andExpect(jsonPath("$.lastName", is(person.getLastName())))
+    	.andExpect(jsonPath("$.dateOfBirth", isA(Number.class)))
+    	.andExpect(jsonPath("$.dateOfBirth", is(person.getDateOfBirth().getTime())))
 		;
     }
 

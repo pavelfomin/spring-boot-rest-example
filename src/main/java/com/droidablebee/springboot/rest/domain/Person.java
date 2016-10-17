@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -27,7 +29,8 @@ public class Person {
 
     @Column(name="middle_name")
     private String middleName;
-    
+
+    @Temporal(TemporalType.DATE)
     @Column(name="dob")
     private Date dateOfBirth;
     
