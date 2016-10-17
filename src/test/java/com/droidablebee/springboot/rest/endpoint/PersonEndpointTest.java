@@ -118,7 +118,6 @@ public class PersonEndpointTest extends BaseEndpointTest {
     @Test
     public void createPerson() throws Exception {
     	
-    	//person with missing middle name - custom validation
     	Person person = createPerson("first", "last");
     	person.setMiddleName("middleName");
 
