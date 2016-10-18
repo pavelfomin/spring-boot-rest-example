@@ -12,6 +12,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Date;
 
+import javax.persistence.EntityManager;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +33,9 @@ import com.droidablebee.springboot.rest.service.PersonService;
 @Transactional
 public class PersonEndpointTest extends BaseEndpointTest {
 
+	@Autowired
+	EntityManager entityManager;
+	
 	@Autowired
 	private PersonService personService;
 	
@@ -55,6 +60,11 @@ public class PersonEndpointTest extends BaseEndpointTest {
 		assertEquals(5L, persons.getTotalElements());
 		
 		testPerson = persons.getContent().get(0);
+		
+		//refresh entity with any changes that have been done during persistence including Hibernate conversion
+		//example: java.util.Date field is injected with either with java.sql.Date (if @Temporal(TemporalType.DATE) is used)
+		//or java.sql.Timestamp
+		entityManager.refresh(testPerson);
     }
 
     @Test
