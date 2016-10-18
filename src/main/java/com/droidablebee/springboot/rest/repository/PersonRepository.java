@@ -1,9 +1,9 @@
 package com.droidablebee.springboot.rest.repository;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.droidablebee.springboot.rest.domain.Person;
 
-public interface PersonRepository extends PagingAndSortingRepository<Person, Long> {
+public interface PersonRepository extends JpaRepository<Person, Long> {
 
 }

@@ -30,6 +30,6 @@ public class PersonService {
 	
 	public Person save(Person person) {
 		
-		return repository.save(person);
+		return repository.saveAndFlush(person);
 	}
 }
