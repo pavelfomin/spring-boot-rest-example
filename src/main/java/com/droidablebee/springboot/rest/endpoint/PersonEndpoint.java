@@ -1,10 +1,5 @@
 package com.droidablebee.springboot.rest.endpoint;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.droidablebee.springboot.rest.domain.Person;
 import com.droidablebee.springboot.rest.service.PersonService;
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
@@ -78,4 +78,17 @@ public class PersonEndpoint {
     	return ResponseEntity.ok().body(person);
     }
     
+    /**
+     * Post operation for use with rest template. REST template does not return response entity for PUT.
+     */
+    @RequestMapping(path = "/v1/person", method = RequestMethod.POST, consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+    @ApiOperation(
+    		value = "Create new or update existing person", 
+    		notes = "Creates new or updates exisitng person. Returns created/updated person with id.",
+    		response = Person.class)
+    public ResponseEntity<Person> create(@Valid @RequestBody Person person) {
+    	
+    	person = personService.save(person);
+    	return ResponseEntity.ok().body(person);
+    }
 }
