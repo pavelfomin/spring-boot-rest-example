@@ -154,10 +154,11 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	
     	Person person = createPerson("first", "last");
     	person.setMiddleName("middleName");
+    	person.setUpdatedDate(Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDateTime());
     	
     	String content = json(person);
     	
-    	mockMvc.perform(
+    	MvcResult result = mockMvc.perform(
     			put("/v1/person")
     			.accept(JSON_MEDIA_TYPE)
     			.content(content)
@@ -168,8 +169,12 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	.andExpect(jsonPath("$.lastName", is(person.getLastName())))
     	.andExpect(jsonPath("$.dateOfBirth", isA(String.class)))
     	.andExpect(jsonPath("$.dateOfBirth", is(person.getDateOfBirth().toString())))
+    	.andExpect(jsonPath("$.updatedDate", isA(String.class)))
+    	.andExpect(jsonPath("$.updatedDate", is(person.getUpdatedDate().toString())))
+    	.andReturn()
     	;
     	
+    	logger.debug("content="+ result.getResponse().getContentAsString());
     }
 
 	private Person createPerson(String first, String last) {
