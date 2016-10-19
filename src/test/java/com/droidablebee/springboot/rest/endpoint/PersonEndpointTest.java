@@ -147,6 +147,29 @@ public class PersonEndpointTest extends BaseEndpointTest {
 		;
     }
 
+    @Test
+    public void createPersonWithDateVerification() throws Exception {
+    	
+    	Person person = createPerson("first", "last");
+    	person.setMiddleName("middleName");
+    	
+    	String content = json(person);
+    	
+    	mockMvc.perform(
+    			put("/v1/person")
+    			.accept(JSON_MEDIA_TYPE)
+    			.content(content)
+    			.contentType(JSON_MEDIA_TYPE))
+    	.andExpect(status().isOk())
+    	.andExpect(jsonPath("$.id", isA(Number.class)))
+    	.andExpect(jsonPath("$.firstName", is(person.getFirstName())))
+    	.andExpect(jsonPath("$.lastName", is(person.getLastName())))
+    	.andExpect(jsonPath("$.dateOfBirth", isA(Number.class)))
+    	.andExpect(jsonPath("$.dateOfBirth", is(person.getDateOfBirth().getTime())))
+    	;
+    	
+    }
+
 	private Person createPerson(String first, String last) {
 		Person person = new Person(first, last);
 		person.setDateOfBirth(new Date(timestamp));
