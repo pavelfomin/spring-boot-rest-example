@@ -34,7 +34,7 @@ public class ActuatorEndpointTest extends BaseEndpointTest {
     	.andExpect(jsonPath("$.build.version", isA(String.class)))
     	.andExpect(jsonPath("$.build.artifact", is("spring-boot-rest-example")))
     	.andExpect(jsonPath("$.build.group", is("com.droidablebee")))
-    	.andExpect(jsonPath("$.build.time", isA(Number.class)))
+    	.andExpect(jsonPath("$.build.time", isA(String.class)))
     	.andReturn()
     	;
     	

@@ -26,6 +26,9 @@ public abstract class BaseEndpointTest {
 	@Autowired
     protected WebApplicationContext webApplicationContext;
 
+	@Autowired
+	ObjectMapper objectMapper;
+	
 	protected MockMvc mockMvc;
 
     protected void setup() throws Exception {
@@ -41,8 +44,7 @@ public abstract class BaseEndpointTest {
 	 */
 	protected String json(Object o) throws IOException {
 
-		ObjectMapper mapper = new ObjectMapper();
-		return mapper.writeValueAsString(o);
+		return objectMapper.writeValueAsString(o);
 	}
 
 }

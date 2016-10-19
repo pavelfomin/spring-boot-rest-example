@@ -1,6 +1,6 @@
 package com.droidablebee.springboot.rest.domain;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,7 +29,7 @@ public class Person {
     private String middleName;
 
     @Column(name="dob")
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
     
     protected Person() {}
 
@@ -66,11 +66,11 @@ public class Person {
 		this.middleName = middleName;
 	}
 
-	public Date getDateOfBirth() {
+	public LocalDate getDateOfBirth() {
 		return dateOfBirth;
 	}
 
-	public void setDateOfBirth(Date dateOfBirth) {
+	public void setDateOfBirth(LocalDate dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
 

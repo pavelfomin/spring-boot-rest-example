@@ -41,6 +41,13 @@
 			<version>2.8.1</version>
 		</dependency>
 
+		<!-- jackson support for java.time.* -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.8.1</version>
+		</dependency>
+
 		<!-- swagger -->
 		<dependency>
 			<groupId>io.springfox</groupId>
