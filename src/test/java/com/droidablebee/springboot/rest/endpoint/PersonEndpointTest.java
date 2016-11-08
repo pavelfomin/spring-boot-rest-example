@@ -25,6 +25,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.droidablebee.springboot.rest.domain.Address;
 import com.droidablebee.springboot.rest.domain.Person;
 import com.droidablebee.springboot.rest.service.PersonService;
 
@@ -113,6 +114,30 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	
     	//person with missing middle name - custom validation
     	Person person = createPerson("first", "last");
+    	String content = json(person);
+		mockMvc.perform(
+				put("/v1/person")
+				.accept(JSON_MEDIA_TYPE)
+				.content(content)
+				.contentType(JSON_MEDIA_TYPE))
+		.andExpect(status().isBadRequest())
+//		.andExpect(content().contentType(JSON_MEDIA_TYPE))
+//		.andExpect(jsonPath("$.exception", is("org.springframework.web.bind.MethodArgumentNotValidException")))
+		;
+    }
+
+    /**
+     * Test JSR-303 bean object graph validation with nested entities. 
+     */
+    @Test
+    public void createPersonValidationAddress() throws Exception {
+    	
+    	//person with missing last name
+    	Person person = createPerson("first", "last");
+    	person.setMiddleName("middle");
+    	person.addAddress(new Address("line1", "city", "state", "zip"));
+    	person.addAddress(new Address()); //invalid address
+
     	String content = json(person);
 		mockMvc.perform(
 				put("/v1/person")

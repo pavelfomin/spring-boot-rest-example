@@ -1,12 +1,18 @@
 package com.droidablebee.springboot.rest.domain;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -31,6 +37,11 @@ public class Person {
     @Column(name="dob")
     private Date dateOfBirth;
     
+    @Valid
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "person_id")
+	private Set<Address> addresses;
+
     protected Person() {}
 
     public Person(String firstName, String lastName) {
@@ -72,6 +83,22 @@ public class Person {
 
 	public void setDateOfBirth(Date dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
+	}
+
+	public Set<Address> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(Set<Address> addresses) {
+		this.addresses = addresses;
+	}
+	
+	public void addAddress(Address address) {
+		
+		if (getAddresses() == null) {
+			setAddresses(new HashSet<>());
+		}
+		getAddresses().add(address);
 	}
 
 }
