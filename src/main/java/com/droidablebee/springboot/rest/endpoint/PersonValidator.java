@@ -16,7 +16,7 @@ public class PersonValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "middleName", "field.required");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "middleName", "validation.message.field.required");
     }
 
 }

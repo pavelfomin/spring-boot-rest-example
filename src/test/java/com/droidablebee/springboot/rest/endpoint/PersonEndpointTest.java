@@ -1,11 +1,13 @@
 package com.droidablebee.springboot.rest.endpoint;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.droidablebee.springboot.rest.domain.Address;
 import com.droidablebee.springboot.rest.domain.Person;
 import com.droidablebee.springboot.rest.service.PersonService;
+
+import net.minidev.json.JSONArray;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
@@ -100,9 +104,12 @@ public class PersonEndpointTest extends BaseEndpointTest {
 				.accept(JSON_MEDIA_TYPE)
 				.content(content)
 				.contentType(JSON_MEDIA_TYPE))
+		.andDo(print())
 		.andExpect(status().isBadRequest())
-//		.andExpect(content().contentType(JSON_MEDIA_TYPE))
-//		.andExpect(jsonPath("$.exception", is("org.springframework.web.bind.MethodArgumentNotValidException")))
+		.andExpect(content().contentType(JSON_MEDIA_TYPE))
+		.andExpect(jsonPath("$", isA(JSONArray.class)))
+		.andExpect(jsonPath("$.length()", is(1)))
+    	.andExpect(jsonPath("$.[?(@.field == 'lastName')].message", hasItem("may not be null")))
 		;
     }
 
@@ -120,9 +127,12 @@ public class PersonEndpointTest extends BaseEndpointTest {
 				.accept(JSON_MEDIA_TYPE)
 				.content(content)
 				.contentType(JSON_MEDIA_TYPE))
+		.andDo(print())
 		.andExpect(status().isBadRequest())
-//		.andExpect(content().contentType(JSON_MEDIA_TYPE))
-//		.andExpect(jsonPath("$.exception", is("org.springframework.web.bind.MethodArgumentNotValidException")))
+		.andExpect(content().contentType(JSON_MEDIA_TYPE))
+		.andExpect(jsonPath("$", isA(JSONArray.class)))
+		.andExpect(jsonPath("$.length()", is(1)))
+    	.andExpect(jsonPath("$.[?(@.field == 'middleName')].message", hasItem("middle name is required")))
 		;
     }
 
@@ -132,7 +142,6 @@ public class PersonEndpointTest extends BaseEndpointTest {
     @Test
     public void createPersonValidationAddress() throws Exception {
     	
-    	//person with missing last name
     	Person person = createPerson("first", "last");
     	person.setMiddleName("middle");
     	person.addAddress(new Address("line1", "city", "state", "zip"));
@@ -144,9 +153,14 @@ public class PersonEndpointTest extends BaseEndpointTest {
 				.accept(JSON_MEDIA_TYPE)
 				.content(content)
 				.contentType(JSON_MEDIA_TYPE))
+		.andDo(print())
 		.andExpect(status().isBadRequest())
-//		.andExpect(content().contentType(JSON_MEDIA_TYPE))
-//		.andExpect(jsonPath("$.exception", is("org.springframework.web.bind.MethodArgumentNotValidException")))
+		.andExpect(content().contentType(JSON_MEDIA_TYPE))
+		.andExpect(jsonPath("$.length()", is(4)))
+    	.andExpect(jsonPath("$.[?(@.field == 'addresses[].line1')].message", hasItem("may not be null")))
+    	.andExpect(jsonPath("$.[?(@.field == 'addresses[].state')].message", hasItem("may not be null")))
+    	.andExpect(jsonPath("$.[?(@.field == 'addresses[].city')].message", hasItem("may not be null")))
+    	.andExpect(jsonPath("$.[?(@.field == 'addresses[].zip')].message", hasItem("may not be null")))
 		;
     }
 

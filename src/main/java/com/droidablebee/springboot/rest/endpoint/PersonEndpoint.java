@@ -28,7 +28,7 @@ import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-public class PersonEndpoint {
+public class PersonEndpoint extends BaseEndpoint {
 
 	static final int DEFAULT_PAGE_SIZE = 10;
 	
