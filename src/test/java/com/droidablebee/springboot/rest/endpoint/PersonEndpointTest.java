@@ -165,6 +165,27 @@ public class PersonEndpointTest extends BaseEndpointTest {
     }
 
     @Test
+    public void createPersonValidationToken() throws Exception {
+    	
+    	Person person = createPerson("first", "last");
+    	person.setMiddleName("middle");
+    	
+    	String content = json(person);
+    	mockMvc.perform(
+    			put("/v1/person", "1")
+    			.header("token", "1") //invalid token
+    			.accept(JSON_MEDIA_TYPE)
+    			.content(content)
+    			.contentType(JSON_MEDIA_TYPE))
+    	.andDo(print())
+    	.andExpect(status().isBadRequest())
+    	.andExpect(content().contentType(JSON_MEDIA_TYPE))
+    	.andExpect(jsonPath("$.length()", is(1)))
+    	.andExpect(jsonPath("$.[?(@.field == 'add.arg1')].message", hasItem("token size 2-40")))
+    	;
+    }
+    
+    @Test
     public void createPerson() throws Exception {
     	
     	Person person = createPerson("first", "last");
@@ -177,6 +198,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
 				.accept(JSON_MEDIA_TYPE)
 				.content(content)
 				.contentType(JSON_MEDIA_TYPE))
+		.andDo(print())
 		.andExpect(status().isOk())
     	.andExpect(jsonPath("$.id", isA(Number.class)))
     	.andExpect(jsonPath("$.firstName", is(person.getFirstName())))
