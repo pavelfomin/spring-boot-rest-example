@@ -13,6 +13,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 public abstract class BaseEndpoint {
@@ -25,6 +26,9 @@ public abstract class BaseEndpoint {
 		return ResponseEntity.badRequest().body(convert(exception.getAllErrors()));
 	}
 	
+  	/**
+	 * Exception handler for validation errors caused by method parameters @RequesParam, @PathVariable, @RequestHeader annotated with javax.validation constraints.
+	 */
 	@ExceptionHandler
 	protected ResponseEntity<?> handleConstrainException(ConstraintViolationException exception) {
 		
@@ -37,10 +41,23 @@ public abstract class BaseEndpoint {
 		
 		return ResponseEntity.badRequest().body(errors);
 	}
-	
+
+	/**
+	 * Exception handler for @RequestBody validation errors.
+	 */
 	@ExceptionHandler
 	protected ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+		
 		return ResponseEntity.badRequest().body(convert(exception.getBindingResult().getAllErrors()));
+	}
+
+  	/**
+	 * Exception handler for missing required parameters errors.
+	 */
+	@ExceptionHandler
+	protected ResponseEntity<?> handleServletRequestBindingException(ServletRequestBindingException exception) {
+
+		return ResponseEntity.badRequest().body(new Error(null, null, exception.getMessage()));
 	}
 
 	protected List<Error> convert(List<ObjectError> objectErrors) {

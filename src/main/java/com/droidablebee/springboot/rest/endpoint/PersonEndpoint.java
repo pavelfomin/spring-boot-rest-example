@@ -31,10 +31,12 @@ import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-@Validated //required for @Valid on method parameters such @RequesParam, @PathVariable, @RequestHeader
+@Validated //required for @Valid on method parameters such as @RequesParam, @PathVariable, @RequestHeader
 public class PersonEndpoint extends BaseEndpoint {
 
 	static final int DEFAULT_PAGE_SIZE = 10;
+	static final String HEADER_TOKEN = "token";
+	static final String HEADER_USER_ID = "userId";
 	
 	@Autowired 
 	PersonService personService;
@@ -80,7 +82,8 @@ public class PersonEndpoint extends BaseEndpoint {
     		response = Person.class)
     public ResponseEntity<Person> add(
     		@Valid @RequestBody Person person,
-    		@Valid @Size(max = 40, min = 2, message = "token size 2-40") @RequestHeader(name = "token", required = false) String token) {
+    		@Valid @Size(max = 40, min = 8, message = "user id size 8-40") @RequestHeader(name = HEADER_USER_ID) String userId,
+    		@Valid @Size(max = 40, min = 2, message = "token size 2-40") @RequestHeader(name = HEADER_TOKEN, required = false) String token) {
     	
     	person = personService.save(person);
     	return ResponseEntity.ok().body(person);

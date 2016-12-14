@@ -1,5 +1,6 @@
 package com.droidablebee.springboot.rest.endpoint;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
@@ -13,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Date;
+import java.util.UUID;
 
 import javax.persistence.EntityManager;
 
@@ -172,8 +174,9 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	
     	String content = json(person);
     	mockMvc.perform(
-    			put("/v1/person", "1")
-    			.header("token", "1") //invalid token
+    			put("/v1/person")
+    			.header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
+    			.header(PersonEndpoint.HEADER_TOKEN, "1") //invalid token
     			.accept(JSON_MEDIA_TYPE)
     			.content(content)
     			.contentType(JSON_MEDIA_TYPE))
@@ -181,7 +184,26 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	.andExpect(status().isBadRequest())
     	.andExpect(content().contentType(JSON_MEDIA_TYPE))
     	.andExpect(jsonPath("$.length()", is(1)))
-    	.andExpect(jsonPath("$.[?(@.field == 'add.arg1')].message", hasItem("token size 2-40")))
+    	.andExpect(jsonPath("$.[?(@.field == 'add.arg2')].message", hasItem("token size 2-40")))
+    	;
+    }
+    
+    @Test
+    public void createPersonValidationUserId() throws Exception {
+    	
+    	Person person = createPerson("first", "last");
+    	person.setMiddleName("middle");
+    	
+    	String content = json(person);
+    	mockMvc.perform(
+    			put("/v1/person")
+    			.accept(JSON_MEDIA_TYPE)
+    			.content(content)
+    			.contentType(JSON_MEDIA_TYPE))
+    	.andDo(print())
+    	.andExpect(status().isBadRequest())
+    	.andExpect(content().contentType(JSON_MEDIA_TYPE))
+    	.andExpect(jsonPath("$.message", containsString("Missing request header '"+ PersonEndpoint.HEADER_USER_ID)))
     	;
     }
     
@@ -195,6 +217,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
 		
     	mockMvc.perform(
 				put("/v1/person")
+    			.header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
 				.accept(JSON_MEDIA_TYPE)
 				.content(content)
 				.contentType(JSON_MEDIA_TYPE))
@@ -218,6 +241,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	
     	mockMvc.perform(
     			put("/v1/person")
+    			.header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
     			.accept(JSON_MEDIA_TYPE)
     			.content(content)
     			.contentType(JSON_MEDIA_TYPE))
