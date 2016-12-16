@@ -6,8 +6,11 @@ import java.util.List;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -17,9 +20,14 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 public abstract class BaseEndpoint {
+	
+	private static final Logger logger = LoggerFactory.getLogger(BaseEndpoint.class);
 
+	protected static final String INTERNAL_SERVER_ERROR_MESSAGE = "Failed to process the request"; 
+	
 	@Autowired
-	protected MessageSource messageSource; 
+	protected MessageSource messageSource;
+
 	
 	@ExceptionHandler
 	protected ResponseEntity<?> handleBindException(BindException exception) {
@@ -60,6 +68,17 @@ public abstract class BaseEndpoint {
 		return ResponseEntity.badRequest().body(new Error(null, null, exception.getMessage()));
 	}
 
+	/**
+	 * Exception handler for other errors.
+	 */
+	@ExceptionHandler
+	protected ResponseEntity<?> handleException(Throwable exception) {
+		
+		logger.error(INTERNAL_SERVER_ERROR_MESSAGE, exception);
+		
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Error(null, null, INTERNAL_SERVER_ERROR_MESSAGE));
+	}
+	
 	protected List<Error> convert(List<ObjectError> objectErrors) {
 		
 		List<Error> errors = new ArrayList<>();

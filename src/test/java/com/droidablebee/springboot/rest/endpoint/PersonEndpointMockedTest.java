@@ -50,4 +50,17 @@ public class PersonEndpointMockedTest extends BaseEndpointTest {
     	.andExpect(jsonPath("$.lastName", is(testPerson.getLastName())))
     	;
     }
+    
+    @Test
+    public void handleGenericException() throws Exception {
+
+		when(personService.findOne(1L)).thenThrow(new RuntimeException("Failed to get person by id"));
+
+    	mockMvc.perform(get("/v1/person/{id}", 1))
+    	.andDo(print())
+    	.andExpect(status().is5xxServerError())
+    	.andExpect(content().contentType(JSON_MEDIA_TYPE))
+    	.andExpect(jsonPath("$.message", is(BaseEndpoint.INTERNAL_SERVER_ERROR_MESSAGE)))
+    	;
+    }
 }
