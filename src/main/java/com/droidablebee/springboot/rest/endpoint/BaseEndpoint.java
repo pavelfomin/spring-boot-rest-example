@@ -19,6 +19,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.droidablebee.springboot.rest.endpoint.error.Error;
+
 public abstract class BaseEndpoint {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BaseEndpoint.class);
@@ -38,7 +40,7 @@ public abstract class BaseEndpoint {
 	 * Exception handler for validation errors caused by method parameters @RequesParam, @PathVariable, @RequestHeader annotated with javax.validation constraints.
 	 */
 	@ExceptionHandler
-	protected ResponseEntity<?> handleConstrainException(ConstraintViolationException exception) {
+	protected ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException exception) {
 		
 		List<Error> errors = new ArrayList<>();
 

@@ -1,4 +1,4 @@
-package com.droidablebee.springboot.rest.endpoint;
+package com.droidablebee.springboot.rest.endpoint.error;
 
 public class Error {
 
