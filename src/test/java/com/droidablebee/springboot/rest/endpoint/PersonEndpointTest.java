@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.droidablebee.springboot.rest.domain.Address;
 import com.droidablebee.springboot.rest.domain.Person;
+import com.droidablebee.springboot.rest.domain.Person.Gender;
 import com.droidablebee.springboot.rest.service.PersonService;
 
 import net.minidev.json.JSONArray;
@@ -253,6 +255,61 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	.andExpect(jsonPath("$.dateOfBirth", is(person.getDateOfBirth().getTime())))
     	;
     	
+    }
+
+    @Test
+    public void requestBodyValidationInvalidJsonValue() throws Exception {
+    	
+    	testPerson.setGender(Gender.M);
+    	String content = json(testPerson);
+    	//payload with invalid gender
+    	content = content.replaceFirst("(\"gender\":\")(M)(\")", "$1Q$3");
+
+    	mockMvc.perform(
+    			put("/v1/person")
+    			.header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
+    			.accept(JSON_MEDIA_TYPE)
+    			.content(content)
+    			.contentType(JSON_MEDIA_TYPE))
+    	.andDo(print())
+    	.andExpect(status().isBadRequest())
+    	.andExpect(content().contentType(JSON_MEDIA_TYPE))
+    	.andExpect(jsonPath("$.message", containsString("Could not read document: Can not deserialize value of type com.droidablebee.springboot.rest.domain.Person$Gender")))
+    	;
+    }
+    
+    @Test
+    public void requestBodyValidationInvalidJson() throws Exception {
+    	
+    	String content = json("not valid json");
+    	mockMvc.perform(
+    			put("/v1/person")
+    			.header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
+    			.accept(JSON_MEDIA_TYPE)
+    			.content(content)
+    			.contentType(JSON_MEDIA_TYPE))
+    	.andDo(print())
+    	.andExpect(status().isBadRequest())
+    	.andExpect(content().contentType(JSON_MEDIA_TYPE))
+    	.andExpect(jsonPath("$.message", containsString("Could not read document: Can not construct instance of com.droidablebee.springboot.rest.domain.Person")))
+    	;
+    }
+
+    @Test
+    public void handleHttpRequestMethodNotSupportedException() throws Exception {
+    	
+    	String content = json(testPerson);
+    	
+    	mockMvc.perform(
+    			delete("/v1/person") //not supported method
+    			.header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
+    			.accept(JSON_MEDIA_TYPE)
+    			.content(content)
+    			.contentType(JSON_MEDIA_TYPE))
+    	.andDo(print())
+    	.andExpect(status().isMethodNotAllowed())
+    	.andExpect(content().string(""))
+    	;
     }
 
 	private Person createPerson(String first, String last) {

@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.NestedServletException;
 
 import com.droidablebee.springboot.rest.domain.Person;
 import com.droidablebee.springboot.rest.service.PersonService;
@@ -51,7 +52,7 @@ public class PersonEndpointMockedTest extends BaseEndpointTest {
     	;
     }
     
-    @Test
+    @Test(expected = NestedServletException.class)
     public void handleGenericException() throws Exception {
 
 		when(personService.findOne(1L)).thenThrow(new RuntimeException("Failed to get person by id"));
@@ -59,8 +60,7 @@ public class PersonEndpointMockedTest extends BaseEndpointTest {
     	mockMvc.perform(get("/v1/person/{id}", 1))
     	.andDo(print())
     	.andExpect(status().is5xxServerError())
-    	.andExpect(content().contentType(JSON_MEDIA_TYPE))
-    	.andExpect(jsonPath("$.message", is(BaseEndpoint.INTERNAL_SERVER_ERROR_MESSAGE)))
+    	.andExpect(content().string(""))
     	;
     }
 }

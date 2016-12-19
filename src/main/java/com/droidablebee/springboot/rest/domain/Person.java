@@ -37,6 +37,9 @@ public class Person {
     @Column(name="dob")
     private Date dateOfBirth;
     
+    @Column(name="gender")
+    private Gender gender;
+    
     @Valid
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "person_id")
@@ -91,6 +94,14 @@ public class Person {
 		this.dateOfBirth = dateOfBirth;
 	}
 
+	public Gender getGender() {
+		return gender;
+	}
+	
+	public void setGender(Gender gender) {
+		this.gender = gender;
+	}
+	
 	public Set<Address> getAddresses() {
 		return addresses;
 	}
@@ -105,6 +116,10 @@ public class Person {
 			setAddresses(new HashSet<>());
 		}
 		getAddresses().add(address);
+	}
+
+	public static enum Gender {
+		M, F;
 	}
 
 }
