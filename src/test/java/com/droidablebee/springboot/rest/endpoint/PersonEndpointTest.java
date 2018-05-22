@@ -43,7 +43,7 @@ import net.minidev.json.JSONArray;
 public class PersonEndpointTest extends BaseEndpointTest {
 
 	@Autowired
-	EntityManager entityManager;
+	private EntityManager entityManager;
 	
 	@Autowired
 	private PersonService personService;
@@ -80,17 +80,15 @@ public class PersonEndpointTest extends BaseEndpointTest {
     public void getPersonById() throws Exception {
     	Long id = testPerson.getId();
     	
-    	MvcResult result = mockMvc.perform(get("/v1/person/{id}", id))
-    	.andExpect(status().isOk())
-    	.andExpect(content().contentType(JSON_MEDIA_TYPE))
-    	.andExpect(jsonPath("$.id", is(id.intValue())))
-    	.andExpect(jsonPath("$.firstName", is(testPerson.getFirstName())))
-    	.andExpect(jsonPath("$.lastName", is(testPerson.getLastName())))
-    	.andExpect(jsonPath("$.dateOfBirth", isA(Number.class)))
-    	.andReturn()
+    	mockMvc.perform(get("/v1/person/{id}", id))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(JSON_MEDIA_TYPE))
+			.andExpect(jsonPath("$.id", is(id.intValue())))
+			.andExpect(jsonPath("$.firstName", is(testPerson.getFirstName())))
+			.andExpect(jsonPath("$.lastName", is(testPerson.getLastName())))
+			.andExpect(jsonPath("$.dateOfBirth", isA(Number.class)))
     	;
-    	
-    	logger.debug("content="+ result.getResponse().getContentAsString());
     }
 
     /**

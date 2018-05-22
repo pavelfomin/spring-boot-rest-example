@@ -1,8 +1,10 @@
 package com.droidablebee.springboot.rest.endpoint;
 
+import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -27,33 +29,41 @@ public class ActuatorEndpointTest extends BaseEndpointTest {
     @Test
     public void getInfo() throws Exception {
     	
-    	MvcResult result = mockMvc.perform(get("/info"))
-    	.andExpect(status().isOk())
-    	.andExpect(content().contentType(JSON_MEDIA_TYPE))
-    	.andExpect(jsonPath("$.build", isA(Object.class)))
-    	.andExpect(jsonPath("$.build.version", isA(String.class)))
-    	.andExpect(jsonPath("$.build.artifact", is("spring-boot-rest-example")))
-    	.andExpect(jsonPath("$.build.group", is("com.droidablebee")))
-    	.andExpect(jsonPath("$.build.time", isA(Number.class)))
-    	.andReturn()
+    	mockMvc.perform(get("/info"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(JSON_MEDIA_TYPE))
+				.andExpect(jsonPath("$.build", isA(Object.class)))
+				.andExpect(jsonPath("$.build.version", isA(String.class)))
+				.andExpect(jsonPath("$.build.artifact", is("spring-boot-rest-example")))
+				.andExpect(jsonPath("$.build.group", is("com.droidablebee")))
+		    	.andExpect(jsonPath("$.build.time", isA(Number.class)))
     	;
-    	
-    	logger.debug("content="+ result.getResponse().getContentAsString());
     }
 
-    @Test
-    public void getHealth() throws Exception {
-    	
-    	MvcResult result = mockMvc.perform(get("/health"))
-    			.andExpect(status().isOk())
-    			.andExpect(content().contentType(JSON_MEDIA_TYPE))
-    			.andExpect(jsonPath("$.status", is("UP")))
-    			.andExpect(jsonPath("$.diskSpace.status", is("UP")))
-    			.andExpect(jsonPath("$.db.status", is("UP")))
-    			.andReturn()
-    			;
-    	
-    	logger.debug("content="+ result.getResponse().getContentAsString());
-    }
-    
+	@Test
+	public void getHealth() throws Exception {
+
+		mockMvc.perform(get("/health"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(JSON_MEDIA_TYPE))
+				.andExpect(jsonPath("$.status", is("UP")))
+				.andExpect(jsonPath("$.diskSpace.status", is("UP")))
+				.andExpect(jsonPath("$.db.status", is("UP")));
+	}
+
+	@Test
+	public void getEnv() throws Exception {
+
+		mockMvc.perform(get("/env"))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(JSON_MEDIA_TYPE))
+				.andExpect(jsonPath("$.profiles").exists())
+				.andExpect(jsonPath("$.systemProperties").exists())
+				.andExpect(jsonPath("$.systemEnvironment").exists())
+				;
+	}
+
 }
