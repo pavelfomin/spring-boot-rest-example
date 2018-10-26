@@ -25,7 +25,7 @@ public class PersonService {
 	@Transactional(readOnly = true)
 	public Person findOne(Long id) {
 		
-		return repository.findOne(id);
+		return repository.getOne(id);
 	}
 	
 	public Person save(Person person) {

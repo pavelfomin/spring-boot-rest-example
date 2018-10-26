@@ -111,7 +111,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
 		.andExpect(content().contentType(JSON_MEDIA_TYPE))
 		.andExpect(jsonPath("$", isA(JSONArray.class)))
 		.andExpect(jsonPath("$.length()", is(1)))
-    	.andExpect(jsonPath("$.[?(@.field == 'lastName')].message", hasItem("may not be null")))
+    	.andExpect(jsonPath("$.[?(@.field == 'lastName')].message", hasItem("must not be null")))
 		;
     }
 
@@ -159,10 +159,10 @@ public class PersonEndpointTest extends BaseEndpointTest {
 		.andExpect(status().isBadRequest())
 		.andExpect(content().contentType(JSON_MEDIA_TYPE))
 		.andExpect(jsonPath("$.length()", is(4)))
-    	.andExpect(jsonPath("$.[?(@.field == 'addresses[].line1')].message", hasItem("may not be null")))
-    	.andExpect(jsonPath("$.[?(@.field == 'addresses[].state')].message", hasItem("may not be null")))
-    	.andExpect(jsonPath("$.[?(@.field == 'addresses[].city')].message", hasItem("may not be null")))
-    	.andExpect(jsonPath("$.[?(@.field == 'addresses[].zip')].message", hasItem("may not be null")))
+    	.andExpect(jsonPath("$.[?(@.field == 'addresses[].line1')].message", hasItem("must not be null")))
+    	.andExpect(jsonPath("$.[?(@.field == 'addresses[].state')].message", hasItem("must not be null")))
+    	.andExpect(jsonPath("$.[?(@.field == 'addresses[].city')].message", hasItem("must not be null")))
+    	.andExpect(jsonPath("$.[?(@.field == 'addresses[].zip')].message", hasItem("must not be null")))
 		;
     }
 
@@ -272,7 +272,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	.andDo(print())
     	.andExpect(status().isBadRequest())
     	.andExpect(content().contentType(JSON_MEDIA_TYPE))
-    	.andExpect(jsonPath("$.message", containsString("Could not read document: Can not deserialize value of type com.droidablebee.springboot.rest.domain.Person$Gender")))
+    	.andExpect(jsonPath("$.message", containsString("Cannot deserialize value of type `com.droidablebee.springboot.rest.domain.Person$Gender`")))
     	;
     }
     
@@ -289,7 +289,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	.andDo(print())
     	.andExpect(status().isBadRequest())
     	.andExpect(content().contentType(JSON_MEDIA_TYPE))
-    	.andExpect(jsonPath("$.message", containsString("Could not read document: Can not construct instance of com.droidablebee.springboot.rest.domain.Person")))
+    	.andExpect(jsonPath("$.message", containsString("Cannot construct instance of `com.droidablebee.springboot.rest.domain.Person`")))
     	;
     }
 
