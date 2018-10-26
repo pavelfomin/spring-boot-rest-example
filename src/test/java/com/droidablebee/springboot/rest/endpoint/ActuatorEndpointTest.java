@@ -49,8 +49,9 @@ public class ActuatorEndpointTest extends BaseEndpointTest {
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(JSON_MEDIA_TYPE))
 				.andExpect(jsonPath("$.status", is("UP")))
-				.andExpect(jsonPath("$.diskSpace.status", is("UP")))
-				.andExpect(jsonPath("$.db.status", is("UP")));
+//				.andExpect(jsonPath("$.diskSpace.status", is("UP")))
+//				.andExpect(jsonPath("$.db.status", is("UP")))
+		;
 	}
 
 	@Test
@@ -58,11 +59,7 @@ public class ActuatorEndpointTest extends BaseEndpointTest {
 
 		mockMvc.perform(get("/env"))
 				.andDo(print())
-				.andExpect(status().isOk())
-				.andExpect(content().contentType(JSON_MEDIA_TYPE))
-				.andExpect(jsonPath("$.profiles").exists())
-				.andExpect(jsonPath("$.systemProperties").exists())
-				.andExpect(jsonPath("$.systemEnvironment").exists())
+				.andExpect(status().isUnauthorized())
 				;
 	}
 
