@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: spring-boot-rest-example
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      config:
+        enabled: true
+        prefix: config
+        defaultContext: application
+        profileSeparator: '::'
+        failFast: false
+      discovery:
+        health-check-url: ${management.server.servlet.context-path}/health
+        health-check-tls-skip-verify: true
