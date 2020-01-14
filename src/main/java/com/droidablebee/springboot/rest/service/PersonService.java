@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.droidablebee.springboot.rest.domain.Person;
 import com.droidablebee.springboot.rest.repository.PersonRepository;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 public class PersonService {
@@ -24,8 +26,9 @@ public class PersonService {
 	
 	@Transactional(readOnly = true)
 	public Person findOne(Long id) {
-		
-		return repository.getOne(id);
+
+		Optional<Person> person = repository.findById(id);
+		return person.isPresent() ? person.get() : null;
 	}
 	
 	public Person save(Person person) {
