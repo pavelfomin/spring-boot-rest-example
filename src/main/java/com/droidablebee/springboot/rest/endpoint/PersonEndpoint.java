@@ -57,7 +57,7 @@ public class PersonEndpoint extends BaseEndpoint {
 			page = 0;
 		}
 
-		Pageable pageable = new PageRequest(page, size);
+		Pageable pageable = PageRequest.of(page, size);
     	Page<Person> persons = personService.findAll(pageable);
     	
 		return persons;

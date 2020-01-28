@@ -20,8 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public abstract class BaseEndpointTest {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-	protected static final MediaType JSON_MEDIA_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("UTF-8"));
-	protected static final MediaType XML_MEDIA_TYPE = new MediaType(MediaType.APPLICATION_XML.getType(), MediaType.APPLICATION_XML.getSubtype(), Charset.forName("UTF-8"));
+	protected static final MediaType JSON_MEDIA_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype());
 
 	@Autowired
     protected WebApplicationContext webApplicationContext;

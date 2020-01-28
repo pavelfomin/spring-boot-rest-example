@@ -64,7 +64,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	personService.save(createPerson("David", "Palmer"));
     	personService.save(createPerson("Michelle", "Dessler"));
 
-    	Page<Person> persons = personService.findAll(new PageRequest(0, PersonEndpoint.DEFAULT_PAGE_SIZE));
+    	Page<Person> persons = personService.findAll(PageRequest.of(0, PersonEndpoint.DEFAULT_PAGE_SIZE));
 		assertNotNull(persons);
 		assertEquals(5L, persons.getTotalElements());
 		
