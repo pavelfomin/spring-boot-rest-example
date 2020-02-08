@@ -1,31 +1,24 @@
 package com.droidablebee.springboot.rest.endpoint;
 
-import static org.hamcrest.Matchers.emptyArray;
+import net.minidev.json.JSONArray;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.web.servlet.MvcResult;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class ActuatorEndpointTest extends BaseEndpointTest {
-
-    @Before
-    public void setup() throws Exception {
-
-    	super.setup();
-    }
 
     @Test
     public void getInfo() throws Exception {
@@ -50,18 +43,41 @@ public class ActuatorEndpointTest extends BaseEndpointTest {
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(JSON_MEDIA_TYPE))
 				.andExpect(jsonPath("$.status", is("UP")))
-//				.andExpect(jsonPath("$.diskSpace.status", is("UP")))
-//				.andExpect(jsonPath("$.db.status", is("UP")))
 		;
 	}
 
 	@Test
-	@Ignore("enable security first")
+	@Ignore("configure special role to see the details?")
+	public void getHealthAuthorized() throws Exception {
+
+		mockMvc.perform(get("/actuator/health").with(jwtWithScope("health-details")))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(JSON_MEDIA_TYPE))
+				.andExpect(jsonPath("$.status", is("UP")))
+				.andExpect(jsonPath("$.diskSpace.status", is("UP")))
+				.andExpect(jsonPath("$.db.status", is("UP")))
+		;
+	}
+
+	@Test
 	public void getEnv() throws Exception {
 
 		mockMvc.perform(get("/actuator/env"))
 				.andDo(print())
 				.andExpect(status().isUnauthorized())
+				;
+	}
+
+	@Test
+	public void getEnvAuthorized() throws Exception {
+
+		mockMvc.perform(get("/actuator/env").with(jwt()))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(JSON_MEDIA_TYPE))
+				.andExpect(jsonPath("$.activeProfiles", isA(JSONArray.class)))
+				.andExpect(jsonPath("$.propertySources", isA(JSONArray.class)))
 				;
 	}
 

@@ -1,24 +1,9 @@
 package com.droidablebee.springboot.rest.endpoint;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.Date;
-import java.util.UUID;
-
-import javax.persistence.EntityManager;
-
+import com.droidablebee.springboot.rest.domain.Address;
+import com.droidablebee.springboot.rest.domain.Person;
+import com.droidablebee.springboot.rest.service.PersonService;
+import net.minidev.json.JSONArray;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,15 +12,28 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.droidablebee.springboot.rest.domain.Address;
-import com.droidablebee.springboot.rest.domain.Person;
-import com.droidablebee.springboot.rest.domain.Person.Gender;
-import com.droidablebee.springboot.rest.service.PersonService;
+import javax.persistence.EntityManager;
+import java.util.Date;
+import java.util.UUID;
 
-import net.minidev.json.JSONArray;
+import static com.droidablebee.springboot.rest.endpoint.PersonEndpoint.PERSON_READ_PERMISSION;
+import static com.droidablebee.springboot.rest.endpoint.PersonEndpoint.PERSON_WRITE_PERMISSION;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
@@ -53,7 +51,6 @@ public class PersonEndpointTest extends BaseEndpointTest {
 	
     @Before
     public void setup() throws Exception {
-    	super.setup();
 
     	timestamp = new Date().getTime();
 
@@ -76,11 +73,31 @@ public class PersonEndpointTest extends BaseEndpointTest {
 		entityManager.refresh(testPerson);
     }
 
-    @Test
+	@Test
+	public void getPersonByIdUnauthorizedNoToken() throws Exception {
+		Long id = testPerson.getId();
+
+		mockMvc.perform(get("/v1/person/{id}", id))
+				.andDo(print())
+				.andExpect(status().isUnauthorized())
+		;
+	}
+
+	@Test
+	public void getPersonByIdForbiddenInvalidScope() throws Exception {
+		Long id = testPerson.getId();
+
+		mockMvc.perform(get("/v1/person/{id}", id).with(jwt()))
+				.andDo(print())
+				.andExpect(status().isForbidden())
+		;
+	}
+
+	@Test
     public void getPersonById() throws Exception {
     	Long id = testPerson.getId();
     	
-    	mockMvc.perform(get("/v1/person/{id}", id))
+    	mockMvc.perform(get("/v1/person/{id}", id).with(jwtWithScope(PERSON_READ_PERMISSION)))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(JSON_MEDIA_TYPE))
@@ -88,6 +105,19 @@ public class PersonEndpointTest extends BaseEndpointTest {
 			.andExpect(jsonPath("$.firstName", is(testPerson.getFirstName())))
 			.andExpect(jsonPath("$.lastName", is(testPerson.getLastName())))
 			.andExpect(jsonPath("$.dateOfBirth", isA(Number.class)))
+    	;
+    }
+
+	@Test
+    public void getAll() throws Exception {
+
+		Page<Person> persons = personService.findAll(PageRequest.of(0, PersonEndpoint.DEFAULT_PAGE_SIZE));
+
+    	mockMvc.perform(get("/v1/persons").with(jwtWithScope(PERSON_READ_PERMISSION)))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(JSON_MEDIA_TYPE))
+			.andExpect(jsonPath("$.content.size()", is((int)persons.getTotalElements())))
     	;
     }
 
@@ -102,7 +132,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	person.setMiddleName("middle");
     	String content = json(person);
 		mockMvc.perform(
-				put("/v1/person")
+				put("/v1/person").with(jwt())
 				.accept(JSON_MEDIA_TYPE)
 				.content(content)
 				.contentType(JSON_MEDIA_TYPE))
@@ -125,7 +155,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	Person person = createPerson("first", "last");
     	String content = json(person);
 		mockMvc.perform(
-				put("/v1/person")
+				put("/v1/person").with(jwt())
 				.accept(JSON_MEDIA_TYPE)
 				.content(content)
 				.contentType(JSON_MEDIA_TYPE))
@@ -151,7 +181,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
 
     	String content = json(person);
 		mockMvc.perform(
-				put("/v1/person")
+				put("/v1/person").with(jwt())
 				.accept(JSON_MEDIA_TYPE)
 				.content(content)
 				.contentType(JSON_MEDIA_TYPE))
@@ -174,7 +204,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	
     	String content = json(person);
     	mockMvc.perform(
-    			put("/v1/person")
+    			put("/v1/person").with(jwtWithScope(PERSON_WRITE_PERMISSION))
     			.header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
     			.header(PersonEndpoint.HEADER_TOKEN, "1") //invalid token
     			.accept(JSON_MEDIA_TYPE)
@@ -184,7 +214,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	.andExpect(status().isBadRequest())
     	.andExpect(content().contentType(JSON_MEDIA_TYPE))
     	.andExpect(jsonPath("$.length()", is(1)))
-    	.andExpect(jsonPath("$.[?(@.field == 'add.arg2')].message", hasItem("token size 2-40")))
+    	.andExpect(jsonPath("$.[?(@.field == 'add.token')].message", hasItem("token size 2-40")))
     	;
     }
     
@@ -196,7 +226,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	
     	String content = json(person);
     	mockMvc.perform(
-    			put("/v1/person")
+    			put("/v1/person").with(jwt())
     			.accept(JSON_MEDIA_TYPE)
     			.content(content)
     			.contentType(JSON_MEDIA_TYPE))
@@ -206,8 +236,46 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	.andExpect(jsonPath("$.message", containsString("Missing request header '"+ PersonEndpoint.HEADER_USER_ID)))
     	;
     }
-    
-    @Test
+
+	@Test
+	public void createPersonUnauthorized() throws Exception {
+
+		Person person = createPerson("first", "last");
+		person.setMiddleName("middleName");
+
+		String content = json(person);
+
+		mockMvc.perform(
+				put("/v1/person")
+						.header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
+						.accept(JSON_MEDIA_TYPE)
+						.content(content)
+						.contentType(JSON_MEDIA_TYPE))
+				.andDo(print())
+				.andExpect(status().isUnauthorized())
+		;
+	}
+
+	@Test
+	public void createPersonForbiddenInvalidScope() throws Exception {
+
+		Person person = createPerson("first", "last");
+		person.setMiddleName("middleName");
+
+		String content = json(person);
+
+		mockMvc.perform(
+				put("/v1/person").with(jwtWithScope(PERSON_READ_PERMISSION))
+						.header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
+						.accept(JSON_MEDIA_TYPE)
+						.content(content)
+						.contentType(JSON_MEDIA_TYPE))
+				.andDo(print())
+				.andExpect(status().isForbidden())
+		;
+	}
+
+	@Test
     public void createPerson() throws Exception {
     	
     	Person person = createPerson("first", "last");
@@ -216,7 +284,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	String content = json(person);
 		
     	mockMvc.perform(
-				put("/v1/person")
+				put("/v1/person").with(jwtWithScope(PERSON_READ_PERMISSION +" "+ PERSON_WRITE_PERMISSION))
     			.header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
 				.accept(JSON_MEDIA_TYPE)
 				.content(content)
@@ -240,7 +308,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	String content = json(person);
     	
     	mockMvc.perform(
-    			put("/v1/person")
+    			put("/v1/person").with(jwtWithScope(PERSON_WRITE_PERMISSION))
     			.header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
     			.accept(JSON_MEDIA_TYPE)
     			.content(content)
@@ -258,13 +326,13 @@ public class PersonEndpointTest extends BaseEndpointTest {
     @Test
     public void requestBodyValidationInvalidJsonValue() throws Exception {
     	
-    	testPerson.setGender(Gender.M);
+    	testPerson.setGender(Person.Gender.M);
     	String content = json(testPerson);
     	//payload with invalid gender
     	content = content.replaceFirst("(\"gender\":\")(M)(\")", "$1Q$3");
 
     	mockMvc.perform(
-    			put("/v1/person")
+    			put("/v1/person").with(jwt())
     			.header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
     			.accept(JSON_MEDIA_TYPE)
     			.content(content)
@@ -281,7 +349,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	
     	String content = json("not valid json");
     	mockMvc.perform(
-    			put("/v1/person")
+    			put("/v1/person").with(jwt())
     			.header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
     			.accept(JSON_MEDIA_TYPE)
     			.content(content)
@@ -299,7 +367,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	String content = json(testPerson);
     	
     	mockMvc.perform(
-    			delete("/v1/person") //not supported method
+    			delete("/v1/person").with(jwt()) //not supported method
     			.header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
     			.accept(JSON_MEDIA_TYPE)
     			.content(content)

@@ -1,8 +1,11 @@
 package com.droidablebee.springboot.rest.endpoint;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Size;
-
+import com.droidablebee.springboot.rest.domain.Person;
+import com.droidablebee.springboot.rest.service.PersonService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -21,13 +25,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.droidablebee.springboot.rest.domain.Person;
-import com.droidablebee.springboot.rest.service.PersonService;
-
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
 
 @RestController
 @RequestMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
@@ -37,10 +36,14 @@ public class PersonEndpoint extends BaseEndpoint {
 	static final int DEFAULT_PAGE_SIZE = 10;
 	static final String HEADER_TOKEN = "token";
 	static final String HEADER_USER_ID = "userId";
-	
+
+	static final String PERSON_READ_PERMISSION = "person-read";
+	static final String PERSON_WRITE_PERMISSION = "person-write";
+
 	@Autowired 
-	PersonService personService;
-	
+	private PersonService personService;
+
+	@PreAuthorize("hasAuthority('SCOPE_" + PERSON_READ_PERMISSION + "')")
 	@RequestMapping(path = "/v1/persons", method = RequestMethod.GET)
 	@ApiOperation(
 			value = "Get all persons", 
@@ -62,7 +65,8 @@ public class PersonEndpoint extends BaseEndpoint {
     	
 		return persons;
     }
-    
+
+	@PreAuthorize("hasAuthority('SCOPE_" + PERSON_READ_PERMISSION + "')")
     @RequestMapping(path = "/v1/person/{id}", method = RequestMethod.GET)
 	@ApiOperation(
 			value = "Get person by id", 
@@ -75,10 +79,11 @@ public class PersonEndpoint extends BaseEndpoint {
         return (person == null ? ResponseEntity.status(HttpStatus.NOT_FOUND) : ResponseEntity.ok()).body(person);
     }
 
+	@PreAuthorize("hasAuthority('SCOPE_" + PERSON_WRITE_PERMISSION + "')")
     @RequestMapping(path = "/v1/person", method = RequestMethod.PUT, consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
     @ApiOperation(
     		value = "Create new or update existing person", 
-    		notes = "Creates new or updates exisitng person. Returns created/updated person with id.",
+    		notes = "Creates new or updates existing person. Returns created/updated person with id.",
     		response = Person.class)
     public ResponseEntity<Person> add(
     		@Valid @RequestBody Person person,
