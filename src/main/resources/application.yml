@@ -1,0 +1,29 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health,env
+  endpoint:
+    health:
+      show-details: when-authorized
+      roles: SCOPE_health-details
+spring:
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+  jackson:
+    #      date-format: yyyy-MM-dd'T'HH:mm:ss.SSSZ:
+    serialization:
+      write_dates_as_timestamps: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # this is to wire the "org.springframework.security.oauth2.jwt.JwtDecoder" bean correctly
+          jwk-set-uri: http://localhost:9999/.well-known/jwks.json
+  datasource:
+    platform: h2
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:test;DB_CLOSE_ON_EXIT=FALSE;MODE=MYSQL;INIT=CREATE SCHEMA IF NOT EXISTS ddb

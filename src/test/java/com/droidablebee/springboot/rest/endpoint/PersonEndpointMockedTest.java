@@ -1,5 +1,6 @@
 package com.droidablebee.springboot.rest.endpoint;
 
+import static com.droidablebee.springboot.rest.endpoint.PersonEndpoint.PERSON_READ_PERMISSION;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -33,8 +34,6 @@ public class PersonEndpointMockedTest extends BaseEndpointTest {
     @Before
     public void setup() throws Exception {
     	
-    	super.setup();
-
     	testPerson = new Person(1L, "Jack", "Bauer");
 		when(personService.findOne(1L)).thenReturn(testPerson);
     }
@@ -42,7 +41,7 @@ public class PersonEndpointMockedTest extends BaseEndpointTest {
     @Test
     public void getPersonById() throws Exception {
     	
-    	mockMvc.perform(get("/v1/person/{id}", 1))
+    	mockMvc.perform(get("/v1/person/{id}", 1).with(jwtWithScope(PERSON_READ_PERMISSION)))
     	.andDo(print())
     	.andExpect(status().isOk())
     	.andExpect(content().contentType(JSON_MEDIA_TYPE))
@@ -57,7 +56,7 @@ public class PersonEndpointMockedTest extends BaseEndpointTest {
 
 		when(personService.findOne(1L)).thenThrow(new RuntimeException("Failed to get person by id"));
 
-    	mockMvc.perform(get("/v1/person/{id}", 1))
+    	mockMvc.perform(get("/v1/person/{id}", 1).with(jwtWithScope(PERSON_READ_PERMISSION)))
     	.andDo(print())
     	.andExpect(status().is5xxServerError())
     	.andExpect(content().string(""))

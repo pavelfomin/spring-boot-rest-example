@@ -18,12 +18,6 @@ import org.springframework.test.web.servlet.MvcResult;
 @SpringBootTest
 public class SwaggerEndpointTest extends BaseEndpointTest {
 
-    @Before
-    public void setup() throws Exception {
-
-    	super.setup();
-    }
-
     @Test
     public void getApiDocs() throws Exception {
     	
