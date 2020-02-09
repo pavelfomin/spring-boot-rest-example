@@ -1,7 +1,14 @@
 name: Java CI
 
-on: [push]
-
+on:
+  push:
+    branches:
+      - master
+      - release/*
+  pull_request:
+    branches:
+      - master
+      - release/*
 jobs:
   build:
 
@@ -13,5 +20,11 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    - name: check release tag
+      if: github.event_name == 'pull_request'
+      run: scripts/check-release.sh
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+    - name: tag release
+      if: github.event_name == 'push'
+      run: scripts/tag-release.sh
