@@ -2,10 +2,11 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,env
+        include: info,health,env
+  endpoint:
     health:
       show-details: when-authorized
-      roles: health-details
+      roles: SCOPE_health-details
 spring:
   jpa:
     properties:

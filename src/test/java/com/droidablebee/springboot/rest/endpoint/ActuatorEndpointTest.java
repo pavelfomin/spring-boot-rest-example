@@ -43,20 +43,36 @@ public class ActuatorEndpointTest extends BaseEndpointTest {
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(JSON_MEDIA_TYPE))
 				.andExpect(jsonPath("$.status", is("UP")))
+				.andExpect(jsonPath("$.components").doesNotExist())
 		;
 	}
 
 	@Test
-	@Ignore("configure special role to see the details?")
 	public void getHealthAuthorized() throws Exception {
+
+		mockMvc.perform(get("/actuator/health").with(jwt()))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(JSON_MEDIA_TYPE))
+				.andExpect(jsonPath("$.status", is("UP")))
+				.andExpect(jsonPath("$.components").doesNotExist())
+		;
+	}
+
+	@Test
+	public void getHealthAuthorizedWithConfiguredRole() throws Exception {
 
 		mockMvc.perform(get("/actuator/health").with(jwtWithScope("health-details")))
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(JSON_MEDIA_TYPE))
 				.andExpect(jsonPath("$.status", is("UP")))
-				.andExpect(jsonPath("$.diskSpace.status", is("UP")))
-				.andExpect(jsonPath("$.db.status", is("UP")))
+				.andExpect(jsonPath("$.components", isA(Object.class)))
+				.andExpect(jsonPath("$.components.diskSpace.status", is("UP")))
+				.andExpect(jsonPath("$.components.diskSpace.details", isA(Object.class)))
+				.andExpect(jsonPath("$.components.db.status", is("UP")))
+				.andExpect(jsonPath("$.components.db.details", isA(Object.class)))
+				.andExpect(jsonPath("$.components.ping.status", is("UP")))
 		;
 	}
 
