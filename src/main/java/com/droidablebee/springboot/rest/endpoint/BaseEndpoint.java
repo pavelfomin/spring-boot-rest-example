@@ -8,8 +8,10 @@ import javax.validation.ConstraintViolationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -24,13 +26,12 @@ public abstract class BaseEndpoint {
 	@Autowired
 	protected MessageSource messageSource;
 
-	
 	@ExceptionHandler
 	protected ResponseEntity<?> handleBindException(BindException exception) {
 		return ResponseEntity.badRequest().body(convert(exception.getAllErrors()));
 	}
-	
-  	/**
+
+	/**
 	 * Exception handler for validation errors caused by method parameters @RequesParam, @PathVariable, @RequestHeader annotated with javax.validation constraints.
 	 */
 	@ExceptionHandler
@@ -71,6 +72,16 @@ public abstract class BaseEndpoint {
 	protected ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
 
 		return ResponseEntity.badRequest().body(new Error(null, null, exception.getMessage()));
+	}
+
+	@ExceptionHandler
+	protected ResponseEntity<?> handleAccessDeniedException(AccessDeniedException exception) {
+		return new ResponseEntity<Error>(new Error(null, null, exception.getMessage()), HttpStatus.FORBIDDEN);
+	}
+
+	@ExceptionHandler
+	protected ResponseEntity<?> handleException(Exception exception) {
+		return new ResponseEntity<Error>(new Error(null, null, exception.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	protected List<Error> convert(List<ObjectError> objectErrors) {
