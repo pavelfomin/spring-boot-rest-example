@@ -1,0 +1,14 @@
+// https://docs.gradle.org/current/userguide/plugins.html#sec:custom_plugin_repositories
+//pluginManagement {
+//    repositories {
+//        maven {
+//            url 'https://artifactory.droidablebee.com/artifactory/plugins-release'
+//            credentials {
+//                username = artifactoryUsername
+//                password = artifactoryPassword
+//            }
+//        }
+//    }
+//}
+
+rootProject.name = 'spring-boot-rest-example'
