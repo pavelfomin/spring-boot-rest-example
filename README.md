@@ -12,3 +12,6 @@
 | GET    |/v1/person/{id}| get person by id |
 | GET    |/v1/persons    | get N persons with an offset|
 | PUT    |/v1/person     | add / update person|
+
+### Change maven version
+`mvn -N io.takari:maven:wrapper -Dmaven=3.8.4`
