@@ -1,21 +1,20 @@
 package com.droidablebee.springboot.rest.repository;
 
 import com.droidablebee.springboot.rest.domain.Person;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @DataJpaTest
 /*
 By default @DataJpaTest uses embeded h2 databaze and ignores the connection string declared in application.properties.
@@ -30,33 +29,33 @@ public class PersonRepositoryTest {
     @PersistenceContext
     EntityManager entityManager;
 
-    @Test(expected = javax.persistence.EntityNotFoundException.class)
+    @Test
     public void getOne() {
 
         Person person = personRepository.getOne(Long.MAX_VALUE);
         assertNotNull(person);
         //access to the Entity's reference state should cause javax.persistence.EntityNotFoundException
         assertNotNull(person.getId()); // accessing id won't throw an exception
-        person.getFirstName(); // will throw exception
+        assertThrows(javax.persistence.EntityNotFoundException.class, () -> person.getFirstName());
     }
 
-    @Test(expected = javax.persistence.EntityNotFoundException.class)
+    @Test
     public void getReferenceUsingEntityManager() {
 
         Person person = entityManager.getReference(Person.class, Long.MAX_VALUE);
         assertNotNull(person);
         //access to the Entity's reference state should cause javax.persistence.EntityNotFoundException
         assertNotNull(person.getId()); // accessing id won't throw an exception
-        person.getFirstName(); // will throw exception
+        assertThrows(javax.persistence.EntityNotFoundException.class, () -> person.getFirstName());
     }
 
-    @Test(expected = java.util.NoSuchElementException.class)
+    @Test
     public void findByIdUsingOptional() {
 
         Optional<Person> optional = personRepository.findById(Long.MAX_VALUE);
         assertNotNull(optional);
         assertFalse(optional.isPresent());
-        optional.get();
+        assertThrows(java.util.NoSuchElementException.class, () -> optional.get());
     }
 
     @Test

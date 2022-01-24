@@ -1,5 +1,9 @@
 package com.droidablebee.springboot.rest.endpoint;
 
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MvcResult;
+
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -7,14 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.web.servlet.MvcResult;
-
-@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class SwaggerEndpointTest extends BaseEndpointTest {
 
