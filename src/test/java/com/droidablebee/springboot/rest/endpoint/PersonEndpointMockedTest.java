@@ -1,5 +1,13 @@
 package com.droidablebee.springboot.rest.endpoint;
 
+import com.droidablebee.springboot.rest.domain.Person;
+import com.droidablebee.springboot.rest.service.PersonService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.transaction.annotation.Transactional;
+
 import static com.droidablebee.springboot.rest.endpoint.PersonEndpoint.PERSON_READ_PERMISSION;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -10,19 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.NestedServletException;
-
-import com.droidablebee.springboot.rest.domain.Person;
-import com.droidablebee.springboot.rest.service.PersonService;
-
-@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 @Transactional
 public class PersonEndpointMockedTest extends BaseEndpointTest {
@@ -32,7 +27,7 @@ public class PersonEndpointMockedTest extends BaseEndpointTest {
 
 	private Person testPerson;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
 
     	testPerson = new Person(1L, "Jack", "Bauer");

@@ -50,7 +50,7 @@ public abstract class BaseEndpointTest {
 
 	protected SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor jwtWithScope(String scope) {
 
-		return jwt(jwt -> jwt.claims(claims -> claims.put("scope", scope)));
+		return jwt().jwt(jwt -> jwt.claims(claims -> claims.put("scope", scope)));
 	}
 
 }

@@ -4,14 +4,12 @@ import com.droidablebee.springboot.rest.domain.Address;
 import com.droidablebee.springboot.rest.domain.Person;
 import com.droidablebee.springboot.rest.service.PersonService;
 import net.minidev.json.JSONArray;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -24,8 +22,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -35,7 +33,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 @Transactional
 public class PersonEndpointTest extends BaseEndpointTest {
@@ -49,7 +46,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
 	private Person testPerson;
 	private long timestamp;
 	
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
 
     	timestamp = new Date().getTime();
@@ -233,7 +230,8 @@ public class PersonEndpointTest extends BaseEndpointTest {
     	.andDo(print())
     	.andExpect(status().isBadRequest())
     	.andExpect(content().contentType(JSON_MEDIA_TYPE))
-    	.andExpect(jsonPath("$.message", containsString("Missing request header '"+ PersonEndpoint.HEADER_USER_ID)))
+		//"Required request header 'userId' for method parameter type String is not present"
+    	.andExpect(jsonPath("$.message", containsString("Required request header '"+ PersonEndpoint.HEADER_USER_ID)))
     	;
     }
 

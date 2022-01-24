@@ -1,0 +1,6 @@
+# override any values in application.yml using default profile for testing
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health,env
