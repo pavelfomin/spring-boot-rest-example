@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @Transactional
-public class PersonEndpointMockedTest extends BaseEndpointTest {
+public class PersonEndpointStubbedTest extends BaseEndpointTest {
 
 	@MockBean
 	private PersonService personService;

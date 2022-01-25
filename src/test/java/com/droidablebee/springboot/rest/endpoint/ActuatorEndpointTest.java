@@ -93,4 +93,24 @@ public class ActuatorEndpointTest extends BaseEndpointTest {
 				;
 	}
 
+	@Test
+	public void getCustom() throws Exception {
+
+		mockMvc.perform(get("/actuator/"+ CustomActuatorEndpoint.CUSTOM))
+				.andDo(print())
+				.andExpect(status().isUnauthorized())
+		;
+	}
+
+	@Test
+	public void getCustomAuthorized() throws Exception {
+
+		mockMvc.perform(get("/actuator/"+ CustomActuatorEndpoint.CUSTOM).with(jwt()))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(JSON_MEDIA_TYPE))
+				.andExpect(content().string("{}"))
+		;
+	}
+
 }
