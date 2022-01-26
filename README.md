@@ -1,5 +1,8 @@
 # Spring boot example with REST and spring data JPA
 
+### Running tests
+* Maven: `./mvnw clean test`
+* Gradle: `./gradlew clean test`
 
 ### Endpoints
 

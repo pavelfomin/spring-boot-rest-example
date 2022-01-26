@@ -18,7 +18,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
     private String issuerUri;
 
-    @Value("${app.security.ignore:/swagger/**, /swagger-resources/**, /swagger-ui.html, /webjars/**, /v2/api-docs, /actuator/info}")
+    @Value("${app.security.ignore:/swagger/**, /swagger-resources/**, /swagger-ui/**, /swagger-ui.html, /webjars/**, /v3/api-docs/**, /actuator/info}")
     private String[] ignorePatterns;
 
     @Override

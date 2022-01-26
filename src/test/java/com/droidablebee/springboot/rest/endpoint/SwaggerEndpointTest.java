@@ -16,26 +16,47 @@ public class SwaggerEndpointTest extends BaseEndpointTest {
 
     @Test
     public void getApiDocs() throws Exception {
-    	
-    	MvcResult result = mockMvc.perform(get("/v2/api-docs"))
-    	.andExpect(status().isOk())
-    	.andExpect(content().contentType(JSON_MEDIA_TYPE))
-    	.andExpect(jsonPath("$.swagger", is("2.0")))
-    	.andExpect(jsonPath("$.info", isA(Object.class)))
-    	.andExpect(jsonPath("$.paths", isA(Object.class)))
-    	.andExpect(jsonPath("$.definitions", isA(Object.class)))
-    	.andReturn()
-    	;
-    	
-    	logger.debug("content="+ result.getResponse().getContentAsString());
+
+        MvcResult result = mockMvc.perform(get("/v3/api-docs"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(JSON_MEDIA_TYPE))
+                .andExpect(jsonPath("$.openapi", is("3.0.1")))
+                .andExpect(jsonPath("$.info", isA(Object.class)))
+                .andExpect(jsonPath("$.servers", isA(Object.class)))
+                .andExpect(jsonPath("$.paths", isA(Object.class)))
+                .andExpect(jsonPath("$.components", isA(Object.class)))
+                .andReturn();
+
+        logger.debug("content=" + result.getResponse().getContentAsString());
+    }
+
+    @Test
+    public void getApiDocSwaggerConfig() throws Exception {
+
+        mockMvc.perform(get("/v3/api-docs/swagger-config"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(JSON_MEDIA_TYPE))
+                .andExpect(jsonPath("$.configUrl", isA(String.class)))
+                .andExpect(jsonPath("$.oauth2RedirectUrl", isA(String.class)))
+                .andExpect(jsonPath("$.url", isA(String.class)))
+                .andExpect(jsonPath("$.validatorUrl", isA(String.class)))
+        ;
     }
 
     @Test
     public void getSwaggerHtml() throws Exception {
-    	
-    	mockMvc.perform(get("/swagger-ui.html"))
-    			.andExpect(status().isOk())
-    			;
+
+        mockMvc.perform(get("/swagger-ui.html"))
+                .andExpect(status().isFound())
+        ;
     }
-    
+
+    @Test
+    public void getSwaggerHtmlIndex() throws Exception {
+
+        mockMvc.perform(get("/swagger-ui/index.html"))
+                .andExpect(status().isOk())
+        ;
+    }
+
 }
