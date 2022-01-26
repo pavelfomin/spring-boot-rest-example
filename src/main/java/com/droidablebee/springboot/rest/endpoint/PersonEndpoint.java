@@ -2,10 +2,10 @@ package com.droidablebee.springboot.rest.endpoint;
 
 import com.droidablebee.springboot.rest.domain.Person;
 import com.droidablebee.springboot.rest.service.PersonService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,13 +45,12 @@ public class PersonEndpoint extends BaseEndpoint {
 
 	@PreAuthorize("hasAuthority('SCOPE_" + PERSON_READ_PERMISSION + "')")
 	@RequestMapping(path = "/v1/persons", method = RequestMethod.GET)
-	@ApiOperation(
-			value = "Get all persons", 
-			notes = "Returns first N persons specified by the size parameter with page offset specified by page parameter.",
-			response = Page.class)
+	@Operation(
+			summary = "Get all persons",
+			description = "Returns first N persons specified by the size parameter with page offset specified by page parameter.")
     public Page<Person> getAll(
-    		@ApiParam("The size of the page to be returned") @RequestParam(required = false) Integer size, 
-    		@ApiParam("Zero-based page index") @RequestParam(required = false) Integer page) {
+    		@Parameter(description = "The size of the page to be returned") @RequestParam(required = false) Integer size,
+    		@Parameter(description = "Zero-based page index") @RequestParam(required = false) Integer page) {
 
 		if (size == null) {
 			size = DEFAULT_PAGE_SIZE;
@@ -68,12 +67,11 @@ public class PersonEndpoint extends BaseEndpoint {
 
 	@PreAuthorize("hasAuthority('SCOPE_" + PERSON_READ_PERMISSION + "')")
     @RequestMapping(path = "/v1/person/{id}", method = RequestMethod.GET)
-	@ApiOperation(
-			value = "Get person by id", 
-			notes = "Returns person for id specified.",
-			response = Person.class)
-	@ApiResponses(value = {@ApiResponse(code = 404, message = "Person not found") })
-    public ResponseEntity<Person> get(@ApiParam("Person id") @PathVariable("id") Long id) {
+	@Operation(
+			summary = "Get person by id",
+			description = "Returns person for id specified.")
+	@ApiResponses(value = {@ApiResponse(responseCode = "404", description = "Person not found") })
+    public ResponseEntity<Person> get(@Parameter(description = "Person id") @PathVariable("id") Long id) {
 		
 		Person person = personService.findOne(id);
         return (person == null ? ResponseEntity.status(HttpStatus.NOT_FOUND) : ResponseEntity.ok()).body(person);
@@ -81,10 +79,9 @@ public class PersonEndpoint extends BaseEndpoint {
 
 	@PreAuthorize("hasAuthority('SCOPE_" + PERSON_WRITE_PERMISSION + "')")
     @RequestMapping(path = "/v1/person", method = RequestMethod.PUT, consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
-    @ApiOperation(
-    		value = "Create new or update existing person", 
-    		notes = "Creates new or updates existing person. Returns created/updated person with id.",
-    		response = Person.class)
+    @Operation(
+    		summary = "Create new or update existing person",
+    		description = "Creates new or updates existing person. Returns created/updated person with id.")
     public ResponseEntity<Person> add(
     		@Valid @RequestBody Person person,
     		@Valid @Size(max = 40, min = 8, message = "user id size 8-40") @RequestHeader(name = HEADER_USER_ID) String userId,
