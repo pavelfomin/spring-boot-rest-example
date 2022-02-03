@@ -1,4 +1,5 @@
 # Spring boot example with REST and spring data JPA
+See [micronaut-rest-example](https://github.com/pavelfomin/micronaut-rest-example) for `Micronaut` implementation.
 
 ### Running tests
 * Maven: `./mvnw clean test`
