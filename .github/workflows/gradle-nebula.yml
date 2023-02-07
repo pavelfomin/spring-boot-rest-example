@@ -27,10 +27,17 @@ jobs:
           distribution: 'temurin'
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
-      - name: Build with Gradle
+      - name: Build snapshot for PR
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        if: github.event_name == 'pull_request'
         with:
-          arguments: build
+          arguments: build -Prelease.stage=SNAPSHOT
+
+      - name: Build release
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        if: github.event_name == 'push'
+        with:
+          arguments: build publish final -Prelease.stage=final
 
       # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
       # the publishing section of your build.gradle
