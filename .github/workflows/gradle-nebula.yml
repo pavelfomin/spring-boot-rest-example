@@ -44,6 +44,8 @@ jobs:
         if: github.event_name == 'push'
         with:
           arguments: build publish final -Prelease.stage=final
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: deploy new release
         if: github.event_name == 'push'
