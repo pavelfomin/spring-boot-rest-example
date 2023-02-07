@@ -33,18 +33,8 @@ jobs:
         with:
           arguments: build -Prelease.stage=final
 
-      - name: Build release
+      - name: Build, publish and tag release
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         if: github.event_name == 'push'
         with:
           arguments: build publish final -Prelease.stage=final
-
-      # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
-      # the publishing section of your build.gradle
-#      - name: Publish to GitHub Packages
-#        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-#        with:
-#          arguments: publish
-#        env:
-#          USERNAME: ${{ github.actor }}
-#          TOKEN: ${{ secrets.GITHUB_TOKEN }}
