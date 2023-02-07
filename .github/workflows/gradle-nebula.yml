@@ -38,3 +38,7 @@ jobs:
         if: github.event_name == 'push'
         with:
           arguments: build publish final -Prelease.stage=final
+
+      - name: deploy new release
+        if: github.event_name == 'push'
+        run: scripts/deploy-latest.sh
