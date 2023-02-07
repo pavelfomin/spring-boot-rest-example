@@ -8,3 +8,7 @@ bin
 
 build
 .gradle
+
+# github workflow
+settings.xml
+toolchains.xml
