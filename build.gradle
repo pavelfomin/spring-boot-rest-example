@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version "${springBootVersion}"
     id 'io.spring.dependency-management' version "${springBootDependencyManagement}"
     id 'java'
+    id 'nebula.release' version "17.1.0"
 }
 
 allprojects {
