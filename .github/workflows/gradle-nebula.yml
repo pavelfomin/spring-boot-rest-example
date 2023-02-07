@@ -24,6 +24,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: 11
+          distribution: 'temurin'
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
       - name: Build with Gradle
