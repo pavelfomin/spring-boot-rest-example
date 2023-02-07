@@ -3,6 +3,7 @@ plugins {
     id 'io.spring.dependency-management' version "${springBootDependencyManagement}"
     id 'java'
     id 'nebula.release' version "17.1.0"
+    id 'nebula.maven-publish' version "18.4.0"
     id 'maven-publish'
 }
 
