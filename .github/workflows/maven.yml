@@ -23,11 +23,20 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
+
+    - name: git status
+      run: |
+        git status
+        git remote -v
+
     - name: check release tag
       if: github.event_name == 'pull_request'
       run: scripts/check-release.sh
+
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+
     - name: tag release
       if: github.event_name == 'push'
       run: scripts/tag-release.sh
+

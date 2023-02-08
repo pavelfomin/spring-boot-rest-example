@@ -17,7 +17,7 @@ jobs:
     # You should set the permissions for this access token in the workflow file to grant
     # read access for the contents scope and write access for the packages scope.
     permissions:
-      contents: read
+      contents: write
       packages: write
 
     steps:
@@ -34,9 +34,9 @@ jobs:
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
       - name: git status
-        run:
-          - git status
-          - git remote -v
+        run: |
+          git status
+          git remote -v
 
       - name: Build for PR
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
