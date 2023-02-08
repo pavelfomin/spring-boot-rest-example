@@ -33,6 +33,11 @@ jobs:
           distribution: 'temurin'
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
+      - name: git status
+        run:
+          - git status
+          - git remote -v
+
       - name: Build for PR
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         if: github.event_name == 'pull_request'
