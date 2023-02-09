@@ -19,6 +19,7 @@ jobs:
     permissions:
       contents: write
       packages: write
+      pull-requests: write
 
     steps:
       - uses: actions/checkout@v3
@@ -43,6 +44,16 @@ jobs:
         if: github.event_name == 'pull_request'
         with:
           arguments: build -Prelease.stage=final
+
+      - name: Add code coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.3
+        if: github.event_name == 'pull_request'
+        with:
+          paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 90
+          min-coverage-changed-files: 99
 
       - name: Build, publish and tag release
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1

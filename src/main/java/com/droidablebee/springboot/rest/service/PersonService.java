@@ -18,6 +18,11 @@ public class PersonService {
 	@Autowired 
 	private PersonRepository repository;
 
+	/**
+	 * Returns paginated list of Person instances.
+	 * @param pageable pageable
+	 * @return paginated list of Person instances
+	 */
 	@Transactional(readOnly = true)
 	public Page<Person> findAll(Pageable pageable) {
 		
@@ -28,7 +33,7 @@ public class PersonService {
 	public Person findOne(Long id) {
 
 		Optional<Person> person = repository.findById(id);
-		return person.isPresent() ? person.get() : null;
+		return person.orElse(null);
 	}
 	
 	public Person save(Person person) {
