@@ -33,7 +33,7 @@ public class PersonService {
 	public Person findOne(Long id) {
 
 		Optional<Person> person = repository.findById(id);
-		return person.isPresent() ? person.get() : null;
+		return person.orElse(null);
 	}
 	
 	public Person save(Person person) {
