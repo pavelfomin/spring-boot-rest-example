@@ -51,7 +51,7 @@ public class ActuatorEndpointTest extends BaseEndpointTest {
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(JSON_MEDIA_TYPE))
 				.andExpect(jsonPath("$.status", is("UP")))
-				.andExpect(jsonPath("$.components", isA(Object.class)))
+				.andExpect(jsonPath("$.components").doesNotExist())
 		;
 	}
 
