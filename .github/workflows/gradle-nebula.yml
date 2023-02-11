@@ -54,15 +54,6 @@ jobs:
           path: ${{ github.workspace }}/build/test-results/test/*.xml
           reporter: java-junit
 
-      # upload full test report (e.g. in case stdout / stderr is needed)
-      - name: Upload test report
-        uses: actions/upload-artifact@v3
-        if: success() || failure()
-        with:
-          name: Tests report
-          path: ${{ github.workspace }}/build/reports/tests
-          retention-days: 1
-
       - name: Add code coverage to PR
         id: jacoco
         uses: madrapps/jacoco-report@v1.3
@@ -80,6 +71,15 @@ jobs:
           arguments: build publish final -Prelease.stage=final
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # upload full test report (e.g. in case stdout / stderr is needed)
+      - name: Upload test report
+        uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: Tests report
+          path: ${{ github.workspace }}/build/reports/tests
+          retention-days: 1
 
       - name: deploy new release
         if: github.event_name == 'push'
