@@ -20,6 +20,7 @@ jobs:
       contents: write
       packages: write
       pull-requests: write
+      checks: write
 
     steps:
       - uses: actions/checkout@v3
@@ -44,6 +45,23 @@ jobs:
         if: github.event_name == 'pull_request'
         with:
           arguments: build -Prelease.stage=final
+
+      - name: Add test report to PR checks
+        uses: dorny/test-reporter@v1
+        if: (success() || failure()) && github.event_name == 'pull_request'
+        with:
+          name: Tests report
+          path: ${{ github.workspace }}/build/test-results/test/*.xml
+          reporter: java-junit
+
+      # upload full test report (e.g. in case stdout / stderr is needed)
+      - name: Upload test report
+        uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: Tests report
+          path: ${{ github.workspace }}/build/reports/tests
+          retention-days: 1
 
       - name: Add code coverage to PR
         id: jacoco
