@@ -1,11 +1,15 @@
 package com.droidablebee.springboot.rest.endpoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
@@ -31,6 +35,12 @@ public abstract class BaseEndpointTest {
 
 	@Autowired
 	protected MockMvc mockMvc;
+
+	@MockBean
+	protected JwtDecoder jwtDecoder;
+
+	@Mock
+	protected Jwt jwt;
 
 //    protected void setup() throws Exception {
 //
