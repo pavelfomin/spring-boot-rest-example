@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import static com.droidablebee.springboot.rest.endpoint.PersonEndpoint.PERSON_READ_PERMISSION;
@@ -327,7 +328,7 @@ public class PersonEndpointTest extends BaseEndpointTest {
     public void createPerson() throws Exception {
 
 		when(jwt.hasClaim("scope")).thenReturn(true);
-		when(jwt.getClaim("scope")).thenReturn(PERSON_READ_PERMISSION +" "+ PERSON_WRITE_PERMISSION);
+		when(jwt.getClaim("scope")).thenReturn(List.of(PERSON_READ_PERMISSION, PERSON_WRITE_PERMISSION));
 
     	Person person = createPerson("first", "last");
     	person.setMiddleName("middleName");
