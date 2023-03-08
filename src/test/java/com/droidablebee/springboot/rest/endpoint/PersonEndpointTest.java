@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -26,7 +25,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -71,17 +69,6 @@ public class PersonEndpointTest extends BaseEndpointTest {
 		//example: java.util.Date field is injected with either with java.sql.Date (if @Temporal(TemporalType.DATE) is used)
 		//or java.sql.Timestamp
 		entityManager.refresh(testPerson);
-
-		when(jwtDecoder.decode(anyString())).thenAnswer(
-			invocation -> {
-				String token = invocation.getArgument(0);
-				if ("invalid".equals(token)) {
-					throw new BadJwtException("Token is invalid");
-				} else {
-					return jwt;
-				}
-			}
-		);
     }
 
 	@Test

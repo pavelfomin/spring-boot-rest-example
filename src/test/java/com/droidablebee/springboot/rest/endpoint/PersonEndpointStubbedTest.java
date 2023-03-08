@@ -28,16 +28,21 @@ public class PersonEndpointStubbedTest extends BaseEndpointTest {
 	private Person testPerson;
 
     @BeforeEach
-    public void setup() throws Exception {
+    public void setup() {
 
     	testPerson = new Person(1L, "Jack", "Bauer");
 		when(personService.findOne(1L)).thenReturn(testPerson);
+
+        when(jwt.hasClaim("scope")).thenReturn(true);
+        when(jwt.getClaim("scope")).thenReturn(PERSON_READ_PERMISSION);
     }
 
     @Test
     public void getPersonById() throws Exception {
 
-    	mockMvc.perform(get("/v1/person/{id}", 1).with(jwtWithScope(PERSON_READ_PERMISSION)))
+    	mockMvc.perform(get("/v1/person/{id}", 1)
+                        .header("Authorization", "Bearer valid")
+                )
     	.andDo(print())
     	.andExpect(status().isOk())
     	.andExpect(content().contentType(JSON_MEDIA_TYPE))
@@ -53,7 +58,9 @@ public class PersonEndpointStubbedTest extends BaseEndpointTest {
         String message = "Failed to get person by id";
         when(personService.findOne(1L)).thenThrow(new RuntimeException(message));
 
-        mockMvc.perform(get("/v1/person/{id}", 1).with(jwtWithScope(PERSON_READ_PERMISSION)))
+        mockMvc.perform(get("/v1/person/{id}", 1)
+                        .header("Authorization", "Bearer valid")
+                )
                 .andDo(print())
                 .andExpect(status().is5xxServerError())
                 .andExpect(content().contentType(JSON_MEDIA_TYPE))
