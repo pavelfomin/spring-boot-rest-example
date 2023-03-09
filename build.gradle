@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version "${springBootVersion}"
     id 'io.spring.dependency-management' version "${springBootDependencyManagement}"
     id 'java'
+    id 'groovy'
     id 'nebula.release' version "17.1.0"
     id 'nebula.maven-publish' version "18.4.0"
     id 'jacoco'
@@ -35,6 +36,7 @@ dependencies {
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "org.spockframework:spock-spring:2.3-groovy-3.0"
 }
 
 repositories {
