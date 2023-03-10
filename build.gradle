@@ -34,9 +34,13 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.5'
     implementation "com.h2database:h2:2.1.210"
 
-    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation ("org.springframework.boot:spring-boot-starter-test") {
+//        exclude group: 'org.mockito'
+//        exclude group: 'org.junit.jupiter'
+    }
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.spockframework:spock-spring:2.3-groovy-3.0"
+//    testImplementation "org.objenesis:objenesis:3.3"
 }
 
 repositories {

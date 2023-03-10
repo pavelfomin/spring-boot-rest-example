@@ -1,8 +1,6 @@
 package com.droidablebee.springboot.rest.endpoint
 
-
 import org.spockframework.spring.SpringSpy
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.util.LinkedMultiValueMap
 import spock.lang.Ignore
 
@@ -16,8 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@SpringBootTest
-@Ignore("Need to figure out why Spock does not inject Spy beans properly")
+// todo: the beans are getting replaced but not getting registered as custom actuator components
+@Ignore("Need to figure out why Spock does not inject Spy beans properly in this case")
 class ActuatorEndpointStubbedSpec extends BaseEndpointSpec {
 
     @SpringSpy

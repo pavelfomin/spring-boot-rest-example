@@ -1,7 +1,6 @@
 package com.droidablebee.springboot.rest.endpoint
 
 import net.minidev.json.JSONArray
-import org.springframework.boot.test.context.SpringBootTest
 
 import static org.hamcrest.Matchers.is
 import static org.hamcrest.Matchers.isA
@@ -12,7 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@SpringBootTest
 class ActuatorEndpointSpec extends BaseEndpointSpec {
 
     def getInfo() throws Exception {

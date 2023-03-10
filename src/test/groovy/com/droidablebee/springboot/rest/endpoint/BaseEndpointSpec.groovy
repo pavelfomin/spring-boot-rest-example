@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.security.oauth2.jwt.BadJwtException
 import org.springframework.security.oauth2.jwt.Jwt
@@ -17,6 +18,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 /**
  * AbstractEndpointTest with common test methods.
  */
+@SpringBootTest
 @AutoConfigureMockMvc
 //this creates MockMvc instance correctly, including wiring of the spring security
 abstract class BaseEndpointSpec extends Specification {

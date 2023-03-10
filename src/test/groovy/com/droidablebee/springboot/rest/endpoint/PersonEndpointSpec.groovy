@@ -5,7 +5,6 @@ import com.droidablebee.springboot.rest.domain.Person
 import com.droidablebee.springboot.rest.service.PersonService
 import net.minidev.json.JSONArray
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.transaction.annotation.Transactional
@@ -18,8 +17,6 @@ import static org.hamcrest.Matchers.containsString
 import static org.hamcrest.Matchers.hasItem
 import static org.hamcrest.Matchers.is
 import static org.hamcrest.Matchers.isA
-import static org.junit.jupiter.api.Assertions.assertEquals
-import static org.junit.jupiter.api.Assertions.assertNotNull
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
@@ -28,7 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@SpringBootTest
 @Transactional
 class PersonEndpointSpec extends BaseEndpointSpec {
 
@@ -53,8 +49,8 @@ class PersonEndpointSpec extends BaseEndpointSpec {
     	personService.save(createPerson('Michelle', 'Dessler'))
 
     	Page<Person> persons = personService.findAll(PageRequest.of(0, PersonEndpoint.DEFAULT_PAGE_SIZE))
-		assertNotNull(persons)
-		assertEquals(5L, persons.getTotalElements())
+		assert persons
+		assert persons.totalElements == 5
 
 		testPerson = persons.getContent().get(0)
 

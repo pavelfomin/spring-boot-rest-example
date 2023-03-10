@@ -1,7 +1,6 @@
 package com.droidablebee.springboot.rest.endpoint
 
 import groovy.util.logging.Slf4j
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.web.servlet.MvcResult
 
 import static org.hamcrest.Matchers.is
@@ -11,7 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-@SpringBootTest
 @Slf4j
 class SwaggerEndpointSpec extends BaseEndpointSpec {
 
