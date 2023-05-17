@@ -65,7 +65,7 @@ public class PersonEndpoint extends BaseEndpoint {
 		return persons;
     }
 
-	@PreAuthorize("hasAuthority('SCOPE_" + PERSON_READ_PERMISSION + "')")
+	@PreAuthorize("hasAuthority('SCOPE_" + PERSON_READ_PERMISSION  + "') or @authorizationConfiguration.isDisabled()")
     @RequestMapping(path = "/v1/person/{id}", method = RequestMethod.GET)
 	@Operation(
 			summary = "Get person by id",
