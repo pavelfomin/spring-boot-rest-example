@@ -41,7 +41,7 @@ jobs:
           git remote -v
 
       - name: Build for PR
-        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        uses: gradle/gradle-build-action@v2
         if: github.event_name == 'pull_request'
         with:
           arguments: build -Prelease.stage=final
@@ -65,7 +65,7 @@ jobs:
           min-coverage-changed-files: 99
 
       - name: Build, publish and tag release
-        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        uses: gradle/gradle-build-action@v2
         if: github.event_name == 'push'
         with:
           arguments: build publish final -Prelease.stage=final
