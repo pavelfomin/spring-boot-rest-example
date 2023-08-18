@@ -3,8 +3,8 @@ package com.droidablebee.springboot.rest.endpoint;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -32,7 +32,7 @@ public abstract class BaseEndpoint {
 	}
 
 	/**
-	 * Exception handler for validation errors caused by method parameters @RequesParam, @PathVariable, @RequestHeader annotated with javax.validation constraints.
+	 * Exception handler for validation errors caused by method parameters @RequesParam, @PathVariable, @RequestHeader annotated with jakarta.validation constraints.
 	 */
 	@ExceptionHandler
 	protected ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException exception) {
@@ -76,12 +76,12 @@ public abstract class BaseEndpoint {
 
 	@ExceptionHandler
 	protected ResponseEntity<?> handleAccessDeniedException(AccessDeniedException exception) {
-		return new ResponseEntity<Error>(new Error(null, null, exception.getMessage()), HttpStatus.FORBIDDEN);
+		return new ResponseEntity<>(new Error(null, null, exception.getMessage()), HttpStatus.FORBIDDEN);
 	}
 
 	@ExceptionHandler
 	protected ResponseEntity<?> handleException(Exception exception) {
-		return new ResponseEntity<Error>(new Error(null, null, exception.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>(new Error(null, null, exception.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	protected List<Error> convert(List<ObjectError> objectErrors) {

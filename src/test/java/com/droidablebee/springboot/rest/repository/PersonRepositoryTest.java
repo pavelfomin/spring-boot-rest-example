@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -34,9 +34,9 @@ public class PersonRepositoryTest {
 
         Person person = personRepository.getOne(Long.MAX_VALUE);
         assertNotNull(person);
-        //access to the Entity's reference state should cause javax.persistence.EntityNotFoundException
+        //access to the Entity's reference state should cause jakarta.persistence.EntityNotFoundException
         assertNotNull(person.getId()); // accessing id won't throw an exception
-        assertThrows(javax.persistence.EntityNotFoundException.class, () -> person.getFirstName());
+        assertThrows(jakarta.persistence.EntityNotFoundException.class, () -> person.getFirstName());
     }
 
     @Test
@@ -44,9 +44,9 @@ public class PersonRepositoryTest {
 
         Person person = entityManager.getReference(Person.class, Long.MAX_VALUE);
         assertNotNull(person);
-        //access to the Entity's reference state should cause javax.persistence.EntityNotFoundException
+        //access to the Entity's reference state should cause jakarta.persistence.EntityNotFoundException
         assertNotNull(person.getId()); // accessing id won't throw an exception
-        assertThrows(javax.persistence.EntityNotFoundException.class, () -> person.getFirstName());
+        assertThrows(jakarta.persistence.EntityNotFoundException.class, () -> person.getFirstName());
     }
 
     @Test

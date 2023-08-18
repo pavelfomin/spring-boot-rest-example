@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.transaction.annotation.Transactional
 
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 
 import static com.droidablebee.springboot.rest.endpoint.PersonEndpoint.PERSON_READ_PERMISSION
 import static com.droidablebee.springboot.rest.endpoint.PersonEndpoint.PERSON_WRITE_PERMISSION
