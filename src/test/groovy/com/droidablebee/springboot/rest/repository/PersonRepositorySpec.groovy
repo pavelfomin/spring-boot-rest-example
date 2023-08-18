@@ -6,9 +6,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import spock.lang.Specification
 
-import javax.persistence.EntityManager
-import javax.persistence.EntityNotFoundException
-import javax.persistence.PersistenceContext
+import jakarta.persistence.EntityManager
+import jakarta.persistence.EntityNotFoundException
+import jakarta.persistence.PersistenceContext
 
 @DataJpaTest
 /*
@@ -35,7 +35,7 @@ class PersonRepositorySpec extends Specification {
         and: "accessing id won't throw an exception"
         person.getId()
 
-        when: "accessing the Entity's reference state should cause javax.persistence.EntityNotFoundException"
+        when: "accessing the Entity's reference state should cause jakarta.persistence.EntityNotFoundException"
         person.getFirstName()
 
         then:
@@ -53,7 +53,7 @@ class PersonRepositorySpec extends Specification {
         and: "accessing id won't throw an exception"
         person.getId()
 
-        when: "accessing the Entity's reference state should cause javax.persistence.EntityNotFoundException"
+        when: "accessing the Entity's reference state should cause jakarta.persistence.EntityNotFoundException"
         person.getFirstName()
 
         then:

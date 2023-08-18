@@ -1,48 +1,47 @@
 package com.droidablebee.springboot.rest.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
-    private String issuerUri;
+public class WebSecurityConfig {
 
     @Value("${app.security.ignore:/swagger/**, /swagger-resources/**, /swagger-ui/**, /swagger-ui.html, /webjars/**, /v3/api-docs/**, /actuator/info}")
     private String[] ignorePatterns;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-        http.csrf().disable(); // do not require SCRF for POST and PUT
-
-        //make sure principal is created for the health endpoint to verify the role
-        http.authorizeRequests().antMatchers("/actuator/health").permitAll();
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests()
-//                .mvcMatchers("/messages/**").hasAuthority("SCOPE_message:read")
-                .anyRequest().authenticated()
+                //make sure principal is created for the health endpoint to verify the role
+                .requestMatchers(new AntPathRequestMatcher("/actuator/health"))
+                .permitAll()
+                .anyRequest()
+                .authenticated()
                 .and()
-                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
+                .oauth2ResourceServer((configurer) -> configurer.jwt(Customizer.withDefaults()))
+                .sessionManagement((s) -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        return http.build();
     }
 
-    @Override
-    public void configure(WebSecurity web) {
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
 
-        web.ignoring().antMatchers(ignorePatterns);
+        return (web) -> web.ignoring().requestMatchers(ignorePatterns);
     }
-
 }

@@ -9,13 +9,8 @@ plugins {
     id 'maven-publish'
 }
 
-allprojects {
-    group 'com.droidablebee'
-    sourceCompatibility = 11
-    targetCompatibility = 11
-}
-
 java {
+    sourceCompatibility = '17'
     withJavadocJar()
     withSourcesJar()
 }
@@ -29,9 +24,9 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
-
-    implementation 'org.springdoc:springdoc-openapi-ui:1.6.5'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.0'
     implementation "com.h2database:h2:2.1.210"
 
     testImplementation ("org.springframework.boot:spring-boot-starter-test") {
@@ -39,8 +34,9 @@ dependencies {
 //        exclude group: 'org.junit.jupiter'
     }
     testImplementation "org.springframework.security:spring-security-test"
-    testImplementation "org.spockframework:spock-spring:2.3-groovy-3.0"
-//    testImplementation "org.objenesis:objenesis:3.3"
+    testImplementation platform("org.spockframework:spock-bom:${spockVersion}-groovy-${groovyVersion}")
+    testImplementation "org.spockframework:spock-spring"
+    testImplementation "org.apache.groovy:groovy-json"
 }
 
 repositories {
@@ -48,8 +44,11 @@ repositories {
     mavenCentral()
 }
 
-test {
+tasks.named('test') {
     useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
     afterSuite { desc, result ->
         if (!desc.parent)
             println("${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)")

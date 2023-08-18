@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Size;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 
 @RestController
 @RequestMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
@@ -65,7 +65,7 @@ public class PersonEndpoint extends BaseEndpoint {
 		return persons;
     }
 
-	@PreAuthorize("hasAuthority('SCOPE_" + PERSON_READ_PERMISSION + "')")
+	@PreAuthorize("hasAuthority('SCOPE_" + PERSON_READ_PERMISSION  + "') or @authorizationConfiguration.isDisabled()")
     @RequestMapping(path = "/v1/person/{id}", method = RequestMethod.GET)
 	@Operation(
 			summary = "Get person by id",
