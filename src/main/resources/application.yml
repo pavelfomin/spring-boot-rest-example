@@ -27,3 +27,8 @@ spring:
     platform: h2
     driverClassName: org.h2.Driver
     url: jdbc:h2:mem:test;DB_CLOSE_ON_EXIT=FALSE;MODE=MYSQL;INIT=CREATE SCHEMA IF NOT EXISTS ddb
+
+  cache:
+    cache-names: CacheableClient
+    caffeine:
+      spec: expireAfterAccess=5m
