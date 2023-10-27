@@ -22,16 +22,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 public class PersonEndpointStubbedTest extends BaseEndpointTest {
 
-	@MockBean
-	private PersonService personService;
+    @MockBean
+    private PersonService personService;
 
-	private Person testPerson;
+    private Person testPerson;
 
     @BeforeEach
     public void setup() {
 
-    	testPerson = new Person(1L, "Jack", "Bauer");
-		when(personService.findOne(1L)).thenReturn(testPerson);
+        testPerson = new Person(1L, "Jack", "Bauer");
+        when(personService.findOne(1L)).thenReturn(testPerson);
 
         when(jwt.hasClaim("scope")).thenReturn(true);
         when(jwt.getClaim("scope")).thenReturn(PERSON_READ_PERMISSION);
@@ -40,16 +40,16 @@ public class PersonEndpointStubbedTest extends BaseEndpointTest {
     @Test
     public void getPersonById() throws Exception {
 
-    	mockMvc.perform(get("/v1/person/{id}", 1)
+        mockMvc.perform(get("/v1/person/{id}", 1)
                         .header("Authorization", "Bearer valid")
                 )
-    	.andDo(print())
-    	.andExpect(status().isOk())
-    	.andExpect(content().contentType(JSON_MEDIA_TYPE))
-    	.andExpect(jsonPath("$.id", is(testPerson.getId().intValue())))
-    	.andExpect(jsonPath("$.firstName", is(testPerson.getFirstName())))
-    	.andExpect(jsonPath("$.lastName", is(testPerson.getLastName())))
-    	;
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(JSON_MEDIA_TYPE))
+                .andExpect(jsonPath("$.id", is(testPerson.getId().intValue())))
+                .andExpect(jsonPath("$.firstName", is(testPerson.getFirstName())))
+                .andExpect(jsonPath("$.lastName", is(testPerson.getLastName())))
+        ;
     }
 
     @Test

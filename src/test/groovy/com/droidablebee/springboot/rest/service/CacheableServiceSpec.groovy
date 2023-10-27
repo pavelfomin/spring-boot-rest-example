@@ -1,6 +1,6 @@
 package com.droidablebee.springboot.rest.service
 
-import com.droidablebee.springboot.rest.domain.Person
+
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest

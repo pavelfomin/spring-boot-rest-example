@@ -12,14 +12,14 @@ public class WebConfiguration implements WebMvcConfigurer {
 
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-    	configurer.defaultContentType(MediaType.APPLICATION_JSON);
+        configurer.defaultContentType(MediaType.APPLICATION_JSON);
     }
-    
+
     /**
      * Enable @Valid validation exception handler for @PathVariable, @RequestParam and @RequestHeader.
      */
     @Bean
     public MethodValidationPostProcessor methodValidationPostProcessor() {
-         return new MethodValidationPostProcessor();
+        return new MethodValidationPostProcessor();
     }
 }

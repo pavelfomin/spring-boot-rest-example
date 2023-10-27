@@ -41,7 +41,7 @@ class SwaggerEndpointSpec extends BaseEndpointSpec {
                 .andExpect(jsonPath('$.oauth2RedirectUrl', isA(String.class)))
                 .andExpect(jsonPath('$.url', isA(String.class)))
                 .andExpect(jsonPath('$.validatorUrl', isA(String.class)))
-        
+
     }
 
     def getSwaggerHtml() throws Exception {
@@ -49,7 +49,7 @@ class SwaggerEndpointSpec extends BaseEndpointSpec {
         expect:
         mockMvc.perform(get('/swagger-ui.html'))
                 .andExpect(status().isFound())
-        
+
     }
 
     def getSwaggerHtmlIndex() throws Exception {
@@ -57,7 +57,7 @@ class SwaggerEndpointSpec extends BaseEndpointSpec {
         expect:
         mockMvc.perform(get('/swagger-ui/index.html'))
                 .andExpect(status().isOk())
-        
+
     }
 
 }

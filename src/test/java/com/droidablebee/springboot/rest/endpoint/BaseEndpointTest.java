@@ -26,55 +26,56 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
  */
 @AutoConfigureMockMvc //this creates MockMvc instance correctly, including wiring of the spring security
 public abstract class BaseEndpointTest {
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-	protected static final MediaType JSON_MEDIA_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype());
+    protected static final MediaType JSON_MEDIA_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype());
 
-	@Autowired
-	ObjectMapper objectMapper;
+    @Autowired
+    ObjectMapper objectMapper;
 
-	@Autowired
-	protected MockMvc mockMvc;
+    @Autowired
+    protected MockMvc mockMvc;
 
-	@MockBean
-	protected JwtDecoder jwtDecoder;
+    @MockBean
+    protected JwtDecoder jwtDecoder;
 
-	@Mock
-	protected Jwt jwt;
+    @Mock
+    protected Jwt jwt;
 
-	/**
-	 * @BeforeEach methods are inherited from superclasses as long as they are not overridden.
-	 * Hence, the different method name.
-	 */
-	@BeforeEach
-	public void setupBase() {
+    /**
+     * @BeforeEach methods are inherited from superclasses as long as they are not overridden.
+     * Hence, the different method name.
+     */
+    @BeforeEach
+    public void setupBase() {
 
-		when(jwtDecoder.decode(anyString())).thenAnswer(
-				invocation -> {
-					String token = invocation.getArgument(0);
-					if ("invalid".equals(token)) {
-						throw new BadJwtException("Token is invalid");
-					} else {
-						return jwt;
-					}
-				}
-		);
-	}
-    
-	/**
-	 * Returns json representation of the object.
-	 * @param o instance
-	 * @return json
-	 * @throws IOException
-	 */
-	protected String json(Object o) throws IOException {
+        when(jwtDecoder.decode(anyString())).thenAnswer(
+                invocation -> {
+                    String token = invocation.getArgument(0);
+                    if ("invalid".equals(token)) {
+                        throw new BadJwtException("Token is invalid");
+                    } else {
+                        return jwt;
+                    }
+                }
+        );
+    }
 
-		return objectMapper.writeValueAsString(o);
-	}
+    /**
+     * Returns json representation of the object.
+     *
+     * @param o instance
+     * @return json
+     * @throws IOException
+     */
+    protected String json(Object o) throws IOException {
 
-	protected SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor jwtWithScope(String scope) {
+        return objectMapper.writeValueAsString(o);
+    }
 
-		return jwt().jwt(jwt -> jwt.claims(claims -> claims.put("scope", scope)));
-	}
+    protected SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor jwtWithScope(String scope) {
+
+        return jwt().jwt(jwt -> jwt.claims(claims -> claims.put("scope", scope)));
+    }
 
 }
