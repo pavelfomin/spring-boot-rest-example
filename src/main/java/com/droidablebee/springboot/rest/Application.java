@@ -9,10 +9,10 @@ import org.springframework.cache.annotation.EnableCaching;
 @SpringBootApplication
 @EnableCaching
 public class Application {
-	@SuppressWarnings("unused")
-	private static final Logger log = LoggerFactory.getLogger(Application.class);
+    @SuppressWarnings("unused")
+    private static final Logger log = LoggerFactory.getLogger(Application.class);
 
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class);
+    }
 }

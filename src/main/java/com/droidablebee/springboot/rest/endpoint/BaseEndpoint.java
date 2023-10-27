@@ -1,11 +1,8 @@
 package com.droidablebee.springboot.rest.endpoint;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.droidablebee.springboot.rest.endpoint.error.Error;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -19,96 +16,97 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.droidablebee.springboot.rest.endpoint.error.Error;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class BaseEndpoint {
-	
-	@Autowired
-	protected MessageSource messageSource;
 
-	@ExceptionHandler
-	protected ResponseEntity<?> handleBindException(BindException exception) {
-		return ResponseEntity.badRequest().body(convert(exception.getAllErrors()));
-	}
+    @Autowired
+    protected MessageSource messageSource;
 
-	/**
-	 * Exception handler for validation errors caused by method parameters @RequesParam, @PathVariable, @RequestHeader annotated with jakarta.validation constraints.
-	 */
-	@ExceptionHandler
-	protected ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException exception) {
-		
-		List<Error> errors = new ArrayList<>();
+    @ExceptionHandler
+    protected ResponseEntity<?> handleBindException(BindException exception) {
+        return ResponseEntity.badRequest().body(convert(exception.getAllErrors()));
+    }
 
-		for (ConstraintViolation<?> violation : exception.getConstraintViolations()) {
-			String value = (violation.getInvalidValue() == null ? null : violation.getInvalidValue().toString());
-			errors.add(new Error(violation.getPropertyPath().toString(), value, violation.getMessage()));
-		}
-		
-		return ResponseEntity.badRequest().body(errors);
-	}
+    /**
+     * Exception handler for validation errors caused by method parameters @RequesParam, @PathVariable, @RequestHeader annotated with jakarta.validation constraints.
+     */
+    @ExceptionHandler
+    protected ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException exception) {
 
-	/**
-	 * Exception handler for @RequestBody validation errors.
-	 */
-	@ExceptionHandler
-	protected ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
-		
-		return ResponseEntity.badRequest().body(convert(exception.getBindingResult().getAllErrors()));
-	}
+        List<Error> errors = new ArrayList<>();
 
-  	/**
-	 * Exception handler for missing required parameters errors.
-	 */
-	@ExceptionHandler
-	protected ResponseEntity<?> handleServletRequestBindingException(ServletRequestBindingException exception) {
+        for (ConstraintViolation<?> violation : exception.getConstraintViolations()) {
+            String value = (violation.getInvalidValue() == null ? null : violation.getInvalidValue().toString());
+            errors.add(new Error(violation.getPropertyPath().toString(), value, violation.getMessage()));
+        }
 
-		return ResponseEntity.badRequest().body(new Error(null, null, exception.getMessage()));
-	}
+        return ResponseEntity.badRequest().body(errors);
+    }
 
-  	/**
-	 * Exception handler for invalid payload (e.g. json invalid format error).
-	 */
-	@ExceptionHandler
-	protected ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
+    /**
+     * Exception handler for @RequestBody validation errors.
+     */
+    @ExceptionHandler
+    protected ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
 
-		return ResponseEntity.badRequest().body(new Error(null, null, exception.getMessage()));
-	}
+        return ResponseEntity.badRequest().body(convert(exception.getBindingResult().getAllErrors()));
+    }
 
-	@ExceptionHandler
-	protected ResponseEntity<?> handleAccessDeniedException(AccessDeniedException exception) {
-		return new ResponseEntity<>(new Error(null, null, exception.getMessage()), HttpStatus.FORBIDDEN);
-	}
+    /**
+     * Exception handler for missing required parameters errors.
+     */
+    @ExceptionHandler
+    protected ResponseEntity<?> handleServletRequestBindingException(ServletRequestBindingException exception) {
 
-	@ExceptionHandler
-	protected ResponseEntity<?> handleException(Exception exception) {
-		return new ResponseEntity<>(new Error(null, null, exception.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-	}
+        return ResponseEntity.badRequest().body(new Error(null, null, exception.getMessage()));
+    }
 
-	protected List<Error> convert(List<ObjectError> objectErrors) {
-		
-		List<Error> errors = new ArrayList<>();
-		
-		for (ObjectError objectError : objectErrors) {
+    /**
+     * Exception handler for invalid payload (e.g. json invalid format error).
+     */
+    @ExceptionHandler
+    protected ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
 
-			String message = objectError.getDefaultMessage(); 
-			if (message == null) {
-				//when using custom spring validator org.springframework.validation.Validator need to resolve messages manually 
-				message = messageSource.getMessage(objectError, null);
-			}
-			
-			Error error = null;
-			if (objectError instanceof FieldError) {
-				FieldError fieldError = (FieldError) objectError;
-				String value = (fieldError.getRejectedValue() == null ? null : fieldError.getRejectedValue().toString());
-				error = new Error(fieldError.getField(), value, message);
-			} else {
-				error = new Error(objectError.getObjectName(), objectError.getCode(), objectError.getDefaultMessage());
-			}
-			
-			errors.add(error);
-		}
-		
-		return errors;
-	}
+        return ResponseEntity.badRequest().body(new Error(null, null, exception.getMessage()));
+    }
+
+    @ExceptionHandler
+    protected ResponseEntity<?> handleAccessDeniedException(AccessDeniedException exception) {
+        return new ResponseEntity<>(new Error(null, null, exception.getMessage()), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler
+    protected ResponseEntity<?> handleException(Exception exception) {
+        return new ResponseEntity<>(new Error(null, null, exception.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    protected List<Error> convert(List<ObjectError> objectErrors) {
+
+        List<Error> errors = new ArrayList<>();
+
+        for (ObjectError objectError : objectErrors) {
+
+            String message = objectError.getDefaultMessage();
+            if (message == null) {
+                //when using custom spring validator org.springframework.validation.Validator need to resolve messages manually
+                message = messageSource.getMessage(objectError, null);
+            }
+
+            Error error;
+            if (objectError instanceof FieldError) {
+                FieldError fieldError = (FieldError) objectError;
+                String value = (fieldError.getRejectedValue() == null ? null : fieldError.getRejectedValue().toString());
+                error = new Error(fieldError.getField(), value, message);
+            } else {
+                error = new Error(objectError.getObjectName(), objectError.getCode(), objectError.getDefaultMessage());
+            }
+
+            errors.add(error);
+        }
+
+        return errors;
+    }
 
 }

@@ -32,35 +32,38 @@ class ActuatorEndpointStubbedSpec extends BaseEndpointSpec {
         custom.add('custom2', 21)
     }
 
-    def getCustomAuthorized() throws Exception {
+    def "get custom - authorized"() throws Exception {
 
         when:
-        mockMvc.perform(get('/actuator/' + CUSTOM).with(jwt()))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(JSON_MEDIA_TYPE))
-                .andExpect(jsonPath('$.custom1', is(custom.get('custom1'))))
-                .andExpect(jsonPath('$.custom2', is(custom.get('custom2'))))
+        mockMvc.perform(
+            get('/actuator/' + CUSTOM).with(jwt())
+        )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(JSON_MEDIA_TYPE))
+            .andExpect(jsonPath('$.custom1', is(custom.get('custom1'))))
+            .andExpect(jsonPath('$.custom2', is(custom.get('custom2'))))
 
         then:
         1 * customActuatorEndpoint.createCustomMap() >> custom
     }
 
-    def getInfoExtended() throws Exception {
-
+    def "get info - extended"() throws Exception {
 
         when:
-        mockMvc.perform(get('/actuator/info'))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(JSON_MEDIA_TYPE))
-                .andExpect(jsonPath('$.build', isA(Object.class)))
-                .andExpect(jsonPath('$.build.version', isA(String.class)))
-                .andExpect(jsonPath('$.build.artifact', is('spring-boot-rest-example')))
-                .andExpect(jsonPath('$.build.group', is('com.droidablebee')))
-                .andExpect(jsonPath('$.build.time', isA(Number.class)))
-                .andExpect(jsonPath('$.custom1', is(custom.get('custom1'))))
-                .andExpect(jsonPath('$.custom2', is(custom.get('custom2'))))
+        mockMvc.perform(
+            get('/actuator/info')
+        )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(JSON_MEDIA_TYPE))
+            .andExpect(jsonPath('$.build', isA(Object.class)))
+            .andExpect(jsonPath('$.build.version', isA(String.class)))
+            .andExpect(jsonPath('$.build.artifact', is('spring-boot-rest-example')))
+            .andExpect(jsonPath('$.build.group', is('com.droidablebee')))
+            .andExpect(jsonPath('$.build.time', isA(Number.class)))
+            .andExpect(jsonPath('$.custom1', is(custom.get('custom1'))))
+            .andExpect(jsonPath('$.custom2', is(custom.get('custom2'))))
 
         then:
         1 * infoWebEndpointExtension.createCustomMap() >> custom
