@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @TestPropertySource(properties = [
-        "app.authorization.enabled:false"
+    "app.authorization.enabled:false"
 ])
 class PersonEndpointAuthorizationDisabledSpec extends BaseEndpointSpec {
 
@@ -32,14 +32,15 @@ class PersonEndpointAuthorizationDisabledSpec extends BaseEndpointSpec {
         Long id = testPerson.id
 
         expect:
-        mockMvc.perform(get('/v1/person/{id}', id)
+        mockMvc.perform(
+            get('/v1/person/{id}', id)
                 .header('Authorization', 'Bearer valid')
         )
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(JSON_MEDIA_TYPE))
-                .andExpect(jsonPath('$.id', is(testPerson.getId().intValue())))
-                .andExpect(jsonPath('$.firstName', is(testPerson.getFirstName())))
-                .andExpect(jsonPath('$.lastName', is(testPerson.getLastName())))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(JSON_MEDIA_TYPE))
+            .andExpect(jsonPath('$.id', is(testPerson.getId().intValue())))
+            .andExpect(jsonPath('$.firstName', is(testPerson.getFirstName())))
+            .andExpect(jsonPath('$.lastName', is(testPerson.getLastName())))
     }
 }

@@ -59,54 +59,59 @@ class PersonEndpointSpec extends BaseEndpointSpec {
         entityManager.refresh(testPerson)
     }
 
-    def getPersonByIdUnauthorizedNoToken() throws Exception {
+    def "get person by id - unauthorized, no token"() throws Exception {
         Long id = testPerson.getId()
 
         expect:
-        mockMvc.perform(get('/v1/person/{id}', id))
-                .andDo(print())
-                .andExpect(status().isUnauthorized())
+        mockMvc.perform(
+            get('/v1/person/{id}', id)
+        )
+            .andDo(print())
+            .andExpect(status().isUnauthorized())
 
     }
 
-    def getPersonByIdUnauthorizedInvalidToken() throws Exception {
+    def "get person by id - unauthorized, invalid token"() throws Exception {
         Long id = testPerson.getId()
 
         expect:
-        mockMvc.perform(get('/v1/person/{id}', id)
+        mockMvc.perform(
+            get('/v1/person/{id}', id)
                 .header('Authorization', 'Bearer invalid')
         )
-                .andDo(print())
-                .andExpect(status().isUnauthorized())
+            .andDo(print())
+            .andExpect(status().isUnauthorized())
 
     }
 
-    def getPersonByIdForbiddenInvalidScope() throws Exception {
+    def "get person by id - forbidden, invalid scope"() throws Exception {
         Long id = testPerson.getId()
 
         expect:
-        mockMvc.perform(get('/v1/person/{id}', id)
+        mockMvc.perform(
+            get('/v1/person/{id}', id)
                 .header('Authorization', 'Bearer valid')
         )
-                .andDo(print())
-                .andExpect(status().isForbidden())
+            .andDo(print())
+            .andExpect(status().isForbidden())
 
     }
 
-    def getPersonById() throws Exception {
+    def "get person by id"() throws Exception {
         Long id = testPerson.getId()
 
         when:
-        mockMvc.perform(get('/v1/person/{id}', id)
+        mockMvc.perform(
+            get('/v1/person/{id}', id)
                 .header('Authorization', 'Bearer valid')
         )
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(JSON_MEDIA_TYPE))
-                .andExpect(jsonPath('$.id', is(id.intValue())))
-                .andExpect(jsonPath('$.firstName', is(testPerson.getFirstName())))
-                .andExpect(jsonPath('$.lastName', is(testPerson.getLastName())))
-                .andExpect(jsonPath('$.dateOfBirth', isA(Number.class)))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(JSON_MEDIA_TYPE))
+            .andExpect(jsonPath('$.id', is(id.intValue())))
+            .andExpect(jsonPath('$.firstName', is(testPerson.getFirstName())))
+            .andExpect(jsonPath('$.lastName', is(testPerson.getLastName())))
+            .andExpect(jsonPath('$.dateOfBirth', isA(Number.class)))
 
         then:
         jwt.hasClaim('scope') >> true
@@ -114,18 +119,19 @@ class PersonEndpointSpec extends BaseEndpointSpec {
 
     }
 
-    def getAll() throws Exception {
+    def "get all"() throws Exception {
 
         Page<Person> persons = personService.findAll(PageRequest.of(0, PersonEndpoint.DEFAULT_PAGE_SIZE))
 
         when:
-        mockMvc.perform(get('/v1/persons')
+        mockMvc.perform(
+            get('/v1/persons')
                 .header('Authorization', 'Bearer valid')
         )
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(JSON_MEDIA_TYPE))
-                .andExpect(jsonPath('$.content.size()', is((int) persons.getTotalElements())))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(JSON_MEDIA_TYPE))
+            .andExpect(jsonPath('$.content.size()', is((int) persons.getTotalElements())))
 
         then:
         jwt.hasClaim('scope') >> true
@@ -135,7 +141,7 @@ class PersonEndpointSpec extends BaseEndpointSpec {
     /**
      * Test JSR-303 bean validation.
      */
-    def createPersonValidationErrorLastName() throws Exception {
+    def "create person validation - error last name"() throws Exception {
 
         //person with missing last name
         Person person = createPerson('first', null)
@@ -144,24 +150,24 @@ class PersonEndpointSpec extends BaseEndpointSpec {
 
         expect:
         mockMvc.perform(
-                put('/v1/person')
-                        .header('Authorization', 'Bearer valid')
-                        .accept(JSON_MEDIA_TYPE)
-                        .content(json)
-                        .contentType(JSON_MEDIA_TYPE)
+            put('/v1/person')
+                .header('Authorization', 'Bearer valid')
+                .accept(JSON_MEDIA_TYPE)
+                .content(json)
+                .contentType(JSON_MEDIA_TYPE)
         )
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(JSON_MEDIA_TYPE))
-                .andExpect(jsonPath('$', isA(JSONArray.class)))
-                .andExpect(jsonPath('$.length()', is(1)))
-                .andExpect(jsonPath('$.[?(@.field == "lastName")].message', hasItem('must not be null')))
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(JSON_MEDIA_TYPE))
+            .andExpect(jsonPath('$', isA(JSONArray.class)))
+            .andExpect(jsonPath('$.length()', is(1)))
+            .andExpect(jsonPath('$.[?(@.field == "lastName")].message', hasItem('must not be null')))
     }
 
     /**
      * Test custom bean validation.
      */
-    def createPersonValidationErrorMiddleName() throws Exception {
+    def "create person validation - error middle name"() throws Exception {
 
         //person with missing middle name - custom validation
         Person person = createPerson('first', 'last')
@@ -169,23 +175,24 @@ class PersonEndpointSpec extends BaseEndpointSpec {
 
         expect:
         mockMvc.perform(
-                put('/v1/person')
-                        .header('Authorization', 'Bearer valid')
-                        .accept(JSON_MEDIA_TYPE)
-                        .content(json)
-                        .contentType(JSON_MEDIA_TYPE))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(JSON_MEDIA_TYPE))
-                .andExpect(jsonPath('$', isA(JSONArray.class)))
-                .andExpect(jsonPath('$.length()', is(1)))
-                .andExpect(jsonPath('$.[?(@.field == "middleName")].message', hasItem('middle name is required')))
+            put('/v1/person')
+                .header('Authorization', 'Bearer valid')
+                .accept(JSON_MEDIA_TYPE)
+                .content(json)
+                .contentType(JSON_MEDIA_TYPE)
+        )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(JSON_MEDIA_TYPE))
+            .andExpect(jsonPath('$', isA(JSONArray.class)))
+            .andExpect(jsonPath('$.length()', is(1)))
+            .andExpect(jsonPath('$.[?(@.field == "middleName")].message', hasItem('middle name is required')))
     }
 
     /**
      * Test JSR-303 bean object graph validation with nested entities.
      */
-    def createPersonValidationAddress() throws Exception {
+    def "create person validation - address"() throws Exception {
 
         Person person = createPerson('first', 'last')
         person.setMiddleName('middle')
@@ -196,22 +203,23 @@ class PersonEndpointSpec extends BaseEndpointSpec {
 
         expect:
         mockMvc.perform(
-                put('/v1/person')
-                        .header('Authorization', 'Bearer valid')
-                        .accept(JSON_MEDIA_TYPE)
-                        .content(json)
-                        .contentType(JSON_MEDIA_TYPE))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(JSON_MEDIA_TYPE))
-                .andExpect(jsonPath('$.length()', is(4)))
-                .andExpect(jsonPath('$.[?(@.field == "addresses[].line1")].message', hasItem('must not be null')))
-                .andExpect(jsonPath('$.[?(@.field == "addresses[].state")].message', hasItem('must not be null')))
-                .andExpect(jsonPath('$.[?(@.field == "addresses[].city")].message', hasItem('must not be null')))
-                .andExpect(jsonPath('$.[?(@.field == "addresses[].zip")].message', hasItem('must not be null')))
+            put('/v1/person')
+                .header('Authorization', 'Bearer valid')
+                .accept(JSON_MEDIA_TYPE)
+                .content(json)
+                .contentType(JSON_MEDIA_TYPE)
+        )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(JSON_MEDIA_TYPE))
+            .andExpect(jsonPath('$.length()', is(4)))
+            .andExpect(jsonPath('$.[?(@.field == "addresses[].line1")].message', hasItem('must not be null')))
+            .andExpect(jsonPath('$.[?(@.field == "addresses[].state")].message', hasItem('must not be null')))
+            .andExpect(jsonPath('$.[?(@.field == "addresses[].city")].message', hasItem('must not be null')))
+            .andExpect(jsonPath('$.[?(@.field == "addresses[].zip")].message', hasItem('must not be null')))
     }
 
-    def createPersonValidationToken() throws Exception {
+    def "create person validation - token"() throws Exception {
 
         Person person = createPerson('first', 'last')
         person.setMiddleName('middle')
@@ -220,25 +228,25 @@ class PersonEndpointSpec extends BaseEndpointSpec {
 
         when:
         mockMvc.perform(
-                put('/v1/person')
-                        .header('Authorization', 'Bearer valid')
-                        .header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
-                        .header(PersonEndpoint.HEADER_TOKEN, '1') //invalid token
-                        .accept(JSON_MEDIA_TYPE)
-                        .content(json)
-                        .contentType(JSON_MEDIA_TYPE))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(JSON_MEDIA_TYPE))
-                .andExpect(jsonPath('$.length()', is(1)))
-                .andExpect(jsonPath('$.[?(@.field == "add.token")].message', hasItem('token size 2-40')))
+            put('/v1/person')
+                .header('Authorization', 'Bearer valid')
+                .header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
+                .header(PersonEndpoint.HEADER_TOKEN, '1') //invalid token
+                .accept(JSON_MEDIA_TYPE)
+                .content(json)
+                .contentType(JSON_MEDIA_TYPE))
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(JSON_MEDIA_TYPE))
+            .andExpect(jsonPath('$.length()', is(1)))
+            .andExpect(jsonPath('$.[?(@.field == "add.token")].message', hasItem('token size 2-40')))
 
         then:
         jwt.hasClaim('scope') >> true
         jwt.getClaim('scope') >> [PERSON_WRITE_PERMISSION]
     }
 
-    def createPersonValidationUserId() throws Exception {
+    def "create person validation - user id"() throws Exception {
 
         Person person = createPerson('first', 'last')
         person.setMiddleName('middle')
@@ -247,19 +255,20 @@ class PersonEndpointSpec extends BaseEndpointSpec {
 
         expect:
         mockMvc.perform(
-                put('/v1/person')
-                        .header('Authorization', 'Bearer valid')
-                        .accept(JSON_MEDIA_TYPE)
-                        .content(json)
-                        .contentType(JSON_MEDIA_TYPE))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(JSON_MEDIA_TYPE))
+            put('/v1/person')
+                .header('Authorization', 'Bearer valid')
+                .accept(JSON_MEDIA_TYPE)
+                .content(json)
+                .contentType(JSON_MEDIA_TYPE)
+        )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(JSON_MEDIA_TYPE))
         //'Required request header 'userId' for method parameter type String is not present'
-                .andExpect(jsonPath('$.message', containsString("Required request header '" + PersonEndpoint.HEADER_USER_ID)))
+            .andExpect(jsonPath('$.message', containsString("Required request header '" + PersonEndpoint.HEADER_USER_ID)))
     }
 
-    def createPersonUnauthorized() throws Exception {
+    def "create person - unauthorized"() throws Exception {
 
         Person person = createPerson('first', 'last')
         person.setMiddleName('middleName')
@@ -268,16 +277,17 @@ class PersonEndpointSpec extends BaseEndpointSpec {
 
         expect:
         mockMvc.perform(
-                put('/v1/person')
-                        .header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
-                        .accept(JSON_MEDIA_TYPE)
-                        .content(json)
-                        .contentType(JSON_MEDIA_TYPE))
-                .andDo(print())
-                .andExpect(status().isUnauthorized())
+            put('/v1/person')
+                .header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
+                .accept(JSON_MEDIA_TYPE)
+                .content(json)
+                .contentType(JSON_MEDIA_TYPE)
+        )
+            .andDo(print())
+            .andExpect(status().isUnauthorized())
     }
 
-    def createPersonForbiddenInvalidScope() throws Exception {
+    def "create person - forbidden, invalid scope"() throws Exception {
 
         Person person = createPerson('first', 'last')
         person.setMiddleName('middleName')
@@ -286,14 +296,15 @@ class PersonEndpointSpec extends BaseEndpointSpec {
 
         when:
         mockMvc.perform(
-                put('/v1/person')
-                        .header('Authorization', 'Bearer valid')
-                        .header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
-                        .accept(JSON_MEDIA_TYPE)
-                        .content(json)
-                        .contentType(JSON_MEDIA_TYPE))
-                .andDo(print())
-                .andExpect(status().isForbidden())
+            put('/v1/person')
+                .header('Authorization', 'Bearer valid')
+                .header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
+                .accept(JSON_MEDIA_TYPE)
+                .content(json)
+                .contentType(JSON_MEDIA_TYPE)
+        )
+            .andDo(print())
+            .andExpect(status().isForbidden())
 
         then:
         jwt.hasClaim('scope') >> true
@@ -309,26 +320,27 @@ class PersonEndpointSpec extends BaseEndpointSpec {
 
         when:
         mockMvc.perform(
-                put('/v1/person')
-                        .header('Authorization', 'Bearer valid')
-                        .header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
-                        .accept(JSON_MEDIA_TYPE)
-                        .content(json)
-                        .contentType(JSON_MEDIA_TYPE))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath('$.id', isA(Number.class)))
-                .andExpect(jsonPath('$.firstName', is(person.getFirstName())))
-                .andExpect(jsonPath('$.lastName', is(person.getLastName())))
-                .andExpect(jsonPath('$.dateOfBirth', isA(Number.class)))
-                .andExpect(jsonPath('$.dateOfBirth', is(person.getDateOfBirth().getTime())))
+            put('/v1/person')
+                .header('Authorization', 'Bearer valid')
+                .header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
+                .accept(JSON_MEDIA_TYPE)
+                .content(json)
+                .contentType(JSON_MEDIA_TYPE)
+        )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath('$.id', isA(Number.class)))
+            .andExpect(jsonPath('$.firstName', is(person.getFirstName())))
+            .andExpect(jsonPath('$.lastName', is(person.getLastName())))
+            .andExpect(jsonPath('$.dateOfBirth', isA(Number.class)))
+            .andExpect(jsonPath('$.dateOfBirth', is(person.getDateOfBirth().getTime())))
 
         then:
         jwt.hasClaim('scope') >> true
         jwt.getClaim('scope') >> [PERSON_READ_PERMISSION, PERSON_WRITE_PERMISSION]
     }
 
-    def createPersonWithDateVerification() throws Exception {
+    def "create person - with date verification"() throws Exception {
 
         Person person = createPerson('first', 'last')
         person.setMiddleName('middleName')
@@ -337,25 +349,26 @@ class PersonEndpointSpec extends BaseEndpointSpec {
 
         when:
         mockMvc.perform(
-                put('/v1/person')
-                        .header('Authorization', 'Bearer valid')
-                        .header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
-                        .accept(JSON_MEDIA_TYPE)
-                        .content(json)
-                        .contentType(JSON_MEDIA_TYPE))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath('$.id', isA(Number.class)))
-                .andExpect(jsonPath('$.firstName', is(person.getFirstName())))
-                .andExpect(jsonPath('$.lastName', is(person.getLastName())))
-                .andExpect(jsonPath('$.dateOfBirth', isA(Number.class)))
-                .andExpect(jsonPath('$.dateOfBirth', is(person.getDateOfBirth().getTime())))
+            put('/v1/person')
+                .header('Authorization', 'Bearer valid')
+                .header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
+                .accept(JSON_MEDIA_TYPE)
+                .content(json)
+                .contentType(JSON_MEDIA_TYPE)
+        )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath('$.id', isA(Number.class)))
+            .andExpect(jsonPath('$.firstName', is(person.getFirstName())))
+            .andExpect(jsonPath('$.lastName', is(person.getLastName())))
+            .andExpect(jsonPath('$.dateOfBirth', isA(Number.class)))
+            .andExpect(jsonPath('$.dateOfBirth', is(person.getDateOfBirth().getTime())))
 
         then:
         jwt.hasClaim('scope') >> true
         jwt.getClaim('scope') >> [PERSON_WRITE_PERMISSION]
     }
 
-    def requestBodyValidationInvalidJsonValue() throws Exception {
+    def "request body validation - invalid json value"() throws Exception {
 
         testPerson.setGender(Person.Gender.M)
         String json = json(testPerson)
@@ -364,51 +377,54 @@ class PersonEndpointSpec extends BaseEndpointSpec {
 
         expect:
         mockMvc.perform(
-                put('/v1/person')
-                        .header('Authorization', 'Bearer valid')
-                        .header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
-                        .accept(JSON_MEDIA_TYPE)
-                        .content(json)
-                        .contentType(JSON_MEDIA_TYPE))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(JSON_MEDIA_TYPE))
-                .andExpect(jsonPath('$.message', containsString("Cannot deserialize value of type `com.droidablebee.springboot.rest.domain.Person\$Gender`")))
+            put('/v1/person')
+                .header('Authorization', 'Bearer valid')
+                .header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
+                .accept(JSON_MEDIA_TYPE)
+                .content(json)
+                .contentType(JSON_MEDIA_TYPE)
+        )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(JSON_MEDIA_TYPE))
+            .andExpect(jsonPath('$.message', containsString("Cannot deserialize value of type `com.droidablebee.springboot.rest.domain.Person\$Gender`")))
     }
 
-    def requestBodyValidationInvalidJson() throws Exception {
+    def "request body validation - invalid json"() throws Exception {
 
         String json = json('not valid json')
 
         expect:
         mockMvc.perform(
-                put('/v1/person')
-                        .header('Authorization', 'Bearer valid')
-                        .header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
-                        .accept(JSON_MEDIA_TYPE)
-                        .content(json)
-                        .contentType(JSON_MEDIA_TYPE))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(JSON_MEDIA_TYPE))
-                .andExpect(jsonPath('$.message', containsString('Cannot construct instance of `com.droidablebee.springboot.rest.domain.Person`')))
+            put('/v1/person')
+                .header('Authorization', 'Bearer valid')
+                .header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
+                .accept(JSON_MEDIA_TYPE)
+                .content(json)
+                .contentType(JSON_MEDIA_TYPE)
+        )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(JSON_MEDIA_TYPE))
+            .andExpect(jsonPath('$.message', containsString('Cannot construct instance of `com.droidablebee.springboot.rest.domain.Person`')))
     }
 
-    def handleHttpRequestMethodNotSupportedException() throws Exception {
+    def "handle http request method not supported exception"() throws Exception {
 
         String json = json(testPerson)
 
         expect:
         mockMvc.perform(
-                delete('/v1/person') //not supported method
-                        .header('Authorization', 'Bearer valid')
-                        .header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
-                        .accept(JSON_MEDIA_TYPE)
-                        .content(json)
-                        .contentType(JSON_MEDIA_TYPE))
-                .andDo(print())
-                .andExpect(status().isMethodNotAllowed())
-                .andExpect(content().string(''))
+            delete('/v1/person') //not supported method
+                .header('Authorization', 'Bearer valid')
+                .header(PersonEndpoint.HEADER_USER_ID, UUID.randomUUID())
+                .accept(JSON_MEDIA_TYPE)
+                .content(json)
+                .contentType(JSON_MEDIA_TYPE)
+        )
+            .andDo(print())
+            .andExpect(status().isMethodNotAllowed())
+            .andExpect(content().string(''))
     }
 
     private Person createPerson(String first, String last) {
