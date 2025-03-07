@@ -69,13 +69,19 @@ class ActuatorEndpointSpec extends BaseEndpointSpec {
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(JSON_MEDIA_TYPE))
-            .andExpect(jsonPath('$.status', is('UP')))
-            .andExpect(jsonPath('$.components', isA(Object.class)))
+            .andExpect(jsonPath('$.size()', is(3))) // status, components, groups
+            .andExpect(jsonPath('$.status', is("UP")))
+            .andExpect(jsonPath('$.groups').exists())
+            .andExpect(jsonPath('$.components').exists())
+            .andExpect(jsonPath('$.components.size()', is(6))) // disk, ping, db, livenessState, readinessState, ssl
             .andExpect(jsonPath('$.components.diskSpace.status', is('UP')))
-            .andExpect(jsonPath('$.components.diskSpace.details', isA(Object.class)))
+            .andExpect(jsonPath('$.components.diskSpace.details').isNotEmpty())
             .andExpect(jsonPath('$.components.db.status', is('UP')))
-            .andExpect(jsonPath('$.components.db.details', isA(Object.class)))
+            .andExpect(jsonPath('$.components.db.details').isNotEmpty())
             .andExpect(jsonPath('$.components.ping.status', is('UP')))
+            .andExpect(jsonPath('$.components.livenessState.status', is("UP")))
+            .andExpect(jsonPath('$.components.readinessState.status', is("UP")))
+            .andExpect(jsonPath('$.components.ssl.status', is("UP")))
     }
 
     def "env - w/out authorization token"() throws Exception {
