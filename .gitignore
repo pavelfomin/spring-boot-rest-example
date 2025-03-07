@@ -12,3 +12,6 @@ build
 # github workflow
 settings.xml
 toolchains.xml
+
+# Mac
+.DS_Store

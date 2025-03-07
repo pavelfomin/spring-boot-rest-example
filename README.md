@@ -19,3 +19,7 @@ See [micronaut-rest-example](https://github.com/pavelfomin/micronaut-rest-exampl
 
 ### Change maven version
 `mvn -N io.takari:maven:wrapper -Dmaven=3.8.4`
+
+### Upgrade Gradle
+* ./gradlew wrapper --gradle-version 8.11
+* ./gradlew wrapper

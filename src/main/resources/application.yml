@@ -7,6 +7,8 @@ management:
     health:
       show-details: when-authorized
       roles: SCOPE_health-details
+      probes:
+        enabled: true
 spring:
   jpa:
     properties:
