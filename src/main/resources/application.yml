@@ -16,9 +16,9 @@ spring:
         format_sql: true
         use_sql_comments: true
   jackson:
-    #      date-format: yyyy-MM-dd'T'HH:mm:ss.SSSZ:
-    serialization:
-      write_dates_as_timestamps: true
+    datatype:
+      datetime:
+        write_dates_as_timestamps: true
   security:
     oauth2:
       resourceserver:

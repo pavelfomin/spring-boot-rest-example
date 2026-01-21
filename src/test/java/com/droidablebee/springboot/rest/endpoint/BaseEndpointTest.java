@@ -1,21 +1,18 @@
 package com.droidablebee.springboot.rest.endpoint;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
-import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.io.IOException;
+import tools.jackson.databind.ObjectMapper;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -36,14 +33,14 @@ public abstract class BaseEndpointTest {
     @Autowired
     protected MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     protected JwtDecoder jwtDecoder;
 
-    @Mock
+    @MockitoBean
     protected Jwt jwt;
 
     /**
-     * @BeforeEach methods are inherited from superclasses as long as they are not overridden.
+     * `@BeforeEach` methods are inherited from superclasses as long as they are not overridden.
      * Hence, the different method name.
      */
     @BeforeEach
@@ -66,9 +63,8 @@ public abstract class BaseEndpointTest {
      *
      * @param o instance
      * @return json
-     * @throws IOException
      */
-    protected String json(Object o) throws IOException {
+    protected String json(Object o) {
 
         return objectMapper.writeValueAsString(o);
     }
