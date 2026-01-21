@@ -5,8 +5,9 @@ import jakarta.persistence.EntityManager
 import jakarta.persistence.EntityNotFoundException
 import jakarta.persistence.PersistenceContext
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.cache.test.autoconfigure.AutoConfigureCache
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase
 import spock.lang.Specification
 
 @DataJpaTest
@@ -15,6 +16,8 @@ By default @DataJpaTest uses embeded h2 databaze and ignores the connection stri
 Annotation @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) disables this behavior.
 */
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+// in SB 4.0, slice tests do not auto-configure additional things unless being told so.
+@AutoConfigureCache
 class PersonRepositorySpec extends Specification {
 
     @Autowired

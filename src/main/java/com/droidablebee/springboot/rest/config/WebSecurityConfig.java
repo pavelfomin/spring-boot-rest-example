@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -22,13 +21,13 @@ public class WebSecurityConfig {
     private String[] ignorePatterns;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) {
 
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(customizer -> customizer
                 //make sure principal is created for the health endpoint to verify the role
-                .requestMatchers(new AntPathRequestMatcher("/actuator/health"))
+                .requestMatchers("/actuator/health")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

@@ -2,7 +2,7 @@ package com.droidablebee.springboot.rest.endpoint;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.util.LinkedMultiValueMap;
 
 import static org.hamcrest.Matchers.is;
@@ -18,10 +18,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class ActuatorEndpointStubbedTest extends BaseEndpointTest {
 
-    @SpyBean
+    @MockitoSpyBean
     private CustomActuatorEndpoint customActuatorEndpoint;
 
-    @SpyBean
+    @MockitoSpyBean
     private InfoWebEndpointExtension infoWebEndpointExtension;
 
     @Test

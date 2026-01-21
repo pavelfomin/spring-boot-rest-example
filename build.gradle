@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '3.5.7'
+    id 'org.springframework.boot' version '4.0.1'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'java'
     id 'groovy'
@@ -21,27 +21,27 @@ springBoot {
 
 ext {
     springDocVersion = '2.3.0'
-    spockVersion = '2.4-M6-groovy-4.0'
+    spockVersion = '2.4-groovy-5.0'
 }
 
 dependencies {
-    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-webmvc"
     implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
-//    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}"
 
-    implementation "com.h2database:h2:2.1.210"
+    implementation "com.h2database:h2:2.2.220"
 //    implementation 'com.github.ben-manes.caffeine:caffeine'
 
-    testImplementation ("org.springframework.boot:spring-boot-starter-test") {
-//        exclude group: 'org.mockito'
-//        exclude group: 'org.junit.jupiter'
-    }
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.springframework.boot:spring-boot-starter-webmvc-test"
+    testImplementation "org.springframework.boot:spring-boot-starter-data-jpa-test"
     testImplementation "org.springframework.security:spring-security-test"
+    testImplementation 'org.springframework.boot:spring-boot-starter-cache-test'
     testImplementation platform("org.spockframework:spock-bom:${spockVersion}")
     testImplementation "org.spockframework:spock-spring"
     testImplementation "org.apache.groovy:groovy-json"
