@@ -1,6 +1,9 @@
 package com.droidablebee.springboot.rest.endpoint;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
  * AbstractEndpointTest with common test methods.
  */
 @AutoConfigureMockMvc //this creates MockMvc instance correctly, including wiring of the spring security
+@ExtendWith(MockitoExtension.class) //  MockitoTestExecutionListener has been removed in SB 4
 public abstract class BaseEndpointTest {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -36,7 +40,9 @@ public abstract class BaseEndpointTest {
     @MockitoBean
     protected JwtDecoder jwtDecoder;
 
-    @MockitoBean
+    // use @ExtendWith(MockitoExtension.class) since MockitoTestExecutionListener has been removed in SB 4
+    // or `@MockitoBean` can be used w/out MockitoExtension
+    @Mock
     protected Jwt jwt;
 
     /**
