@@ -63,17 +63,6 @@ public class PersonEndpoint extends BaseEndpoint {
         return (person == null ? ResponseEntity.status(HttpStatus.NOT_FOUND) : ResponseEntity.ok()).body(person);
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_" + PERSON_WRITE_PERMISSION + "')")
-    @RequestMapping(path = "/v1/person", method = RequestMethod.PUT, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<Person> add(
-            @Valid @RequestBody Person person,
-            @Valid @Size(max = 40, min = 8, message = "user id size 8-40") @RequestHeader(name = HEADER_USER_ID) String userId,
-            @Valid @Size(max = 40, min = 2, message = "token size 2-40") @RequestHeader(name = HEADER_TOKEN, required = false) String token) {
-
-        person = personService.save(person);
-        return ResponseEntity.ok().body(person);
-    }
-
     @InitBinder("person")
     protected void initBinder(WebDataBinder binder) {
         binder.addValidators(new PersonValidator());
