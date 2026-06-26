@@ -34,7 +34,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}"
 
-    implementation "com.h2database:h2:2.2.220"
+    implementation "com.h2database:h2:2.4.240"
 //    implementation 'com.github.ben-manes.caffeine:caffeine'
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
