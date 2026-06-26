@@ -1,0 +1,12 @@
+version: 2
+updates:
+  # Maintain dependencies for Gradle
+  - package-ecosystem: "gradle"
+    directory: "/" # If your gradle file is not in the root of your repository, you will need to update
+    schedule:
+      interval: "daily"
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

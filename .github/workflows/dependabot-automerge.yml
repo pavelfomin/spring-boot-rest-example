@@ -1,0 +1,16 @@
+name: Dependabot Auto Merge
+
+on: pull_request
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  dependabot:
+    uses: pavelfomin/shared-workflows/.github/workflows/dependabot-automerge.yml@v0
+    with:
+      user: ${{github.event.pull_request.user.login}}
+      url:  ${{github.event.pull_request.html_url}}
+      exclusion_regex: kafka-avro-serializer
+    secrets: inherit
