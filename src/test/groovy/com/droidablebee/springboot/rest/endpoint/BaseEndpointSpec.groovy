@@ -40,7 +40,9 @@ abstract class BaseEndpointSpec extends Specification {
 
         jwtDecoder.decode("invalid") >> { String token -> throw new BadJwtException("Mocked token '$token' is invalid") }
         jwtDecoder.decode(_ as String) >> jwt
-        jwt.getClaims() >> [:] // required by org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter#isDPoPBoundAccessToken
+        jwt.getClaims() >> [test: "test"] // required by org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter#isDPoPBoundAccessToken and org.springframework.security.oauth2.jwt.Jwt.Jwt
+        jwt.getTokenValue() >> "valid" // required by org.springframework.security.oauth2.jwt.Jwt.Jwt
+        jwt.getHeaders() >> [test: "test"] // required by org.springframework.security.oauth2.jwt.Jwt.Jwt
     }
 
     /**

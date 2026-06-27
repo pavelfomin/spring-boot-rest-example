@@ -17,7 +17,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.Map;
+
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 
@@ -62,6 +65,10 @@ public abstract class BaseEndpointTest {
                     }
                 }
         );
+
+        lenient().when(jwt.getClaims()).thenReturn(Map.of("test", "test")); // required by org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter#isDPoPBoundAccessToken and org.springframework.security.oauth2.jwt.Jwt.Jwt
+        lenient().when(jwt.getTokenValue()).thenReturn("valid");  // required by org.springframework.security.oauth2.jwt.Jwt.Jwt
+        lenient().when(jwt.getHeaders()).thenReturn(Map.of("test", "test")); // required by org.springframework.security.oauth2.jwt.Jwt.Jwt
     }
 
     /**
