@@ -9,7 +9,16 @@ on:
     branches:
       - master
       - release/*
+  schedule:
+    - cron: '0 */6 * * *'
+
 jobs:
+
+  find-untagged-commit:
+    name: find untagged commit
+    uses: pavelfomin/shared-workflows/.github/workflows/find-untagged-commit.yml@v0
+    secrets: inherit
+
   build:
 
     runs-on: ubuntu-latest
@@ -21,7 +30,7 @@ jobs:
       packages: write
       pull-requests: write
       checks: write
-
+    if: ${{ needs.find-untagged-commit.outputs.hash || github.event_name != 'schedule' }}
     steps:
       - uses: actions/checkout@v4
         with:
