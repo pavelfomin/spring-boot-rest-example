@@ -22,7 +22,7 @@ class SwaggerEndpointSpec extends BaseEndpointSpec {
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(JSON_MEDIA_TYPE))
-            .andExpect(jsonPath('$.openapi', is('3.0.1')))
+            .andExpect(jsonPath('$.openapi', is('3.1.0')))
             .andExpect(jsonPath('$.info', isA(Object.class)))
             .andExpect(jsonPath('$.servers', isA(Object.class)))
             .andExpect(jsonPath('$.paths', isA(Object.class)))
