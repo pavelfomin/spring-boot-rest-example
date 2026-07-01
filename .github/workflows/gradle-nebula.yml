@@ -52,6 +52,15 @@ jobs:
           git status
           git remote -v
 
+      # Nebula validates git user.name/email when the plugin is applied (configuration time),
+      # so this must run before any gradlew invocation. Derive the identity from the HEAD commit
+      # so the release tag is attributed to the commit's author without hardcoding a name/email.
+      - name: Configure git identity from HEAD commit
+        if: github.event_name == 'push'
+        run: |
+          git config user.name  "$(git log -1 --format='%an')"
+          git config user.email "$(git log -1 --format='%ae')"
+
       - name: Build for PR
         if: github.event_name == 'pull_request'
         run: ./gradlew build -Prelease.stage=final
