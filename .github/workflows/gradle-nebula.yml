@@ -32,7 +32,7 @@ jobs:
       checks: write
     if: ${{ needs.find-untagged-commit.outputs.hash || github.event_name != 'schedule' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # 0 indicates all history for all branches and tags
           fetch-depth: "0"
