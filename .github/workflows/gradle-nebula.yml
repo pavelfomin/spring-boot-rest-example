@@ -91,7 +91,7 @@ jobs:
 
       # upload full test report (e.g. in case stdout / stderr is needed)
       - name: Upload test report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: success() || failure()
         with:
           name: Tests report
