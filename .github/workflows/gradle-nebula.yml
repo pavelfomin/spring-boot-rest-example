@@ -104,3 +104,38 @@ jobs:
       - name: deploy new release
         if: github.event_name != 'pull_request'
         run: scripts/deploy-latest.sh
+
+      # nebula's `final` task creates and pushes the tag, but nothing creates a GitHub Release,
+      # so /releases/tag/<tag> falls back to rendering the bare tag annotation - and since
+      # nebula-release 21 that annotation is just "Release of <version>" with no commit list.
+      # Creating a Release makes GitHub render generated notes (merged PRs) on that same page.
+      #
+      # These two steps run last, after the deploy, on purpose: a step-level `if:` that contains
+      # no status-check function still has an implicit `success() &&`, so a failure here - a
+      # transient 5xx, a secondary rate limit, a ruleset 403 - would skip the deploy even though
+      # the artifact is already built, published and tagged. The Release is cosmetic and must not
+      # gate deployment. scripts/deploy-latest.sh resolves the version itself, so it does not
+      # depend on the release_tag outputs below.
+      #
+      # The tag can't come from github.ref_name: this job is triggered by a push to master and
+      # nebula creates the tag mid-job, so the ref is the branch. Derive it the same way
+      # scripts/deploy-latest.sh does. previous_tag pins the notes comparison base to the
+      # preceding tag - left to GitHub it defaults to the last *release*, and the existing
+      # release gaps (v4.16.0-v4.19.0, v4.22.0) would make the first run re-list old PRs.
+      - name: Determine release tag
+        id: release_tag
+        if: github.event_name != 'pull_request'
+        run: |
+          tag=$(git describe --abbrev=0 --tags --first-parent)
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          echo "previous_tag=$(git describe --abbrev=0 --tags --first-parent "${tag}^")" >> "$GITHUB_OUTPUT"
+
+      # Reruns are safe: the action updates an existing release rather than failing.
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v3
+        if: github.event_name != 'pull_request'
+        with:
+          tag_name: ${{ steps.release_tag.outputs.tag }}
+          name: ${{ steps.release_tag.outputs.tag }}
+          previous_tag: ${{ steps.release_tag.outputs.previous_tag }}
+          generate_release_notes: true
