@@ -92,6 +92,34 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # nebula's `final` task creates and pushes the tag, but nothing creates a GitHub Release,
+      # so /releases/tag/<tag> falls back to rendering the bare tag annotation - and since
+      # nebula-release 21 that annotation is just "Release of <version>" with no commit list.
+      # Creating a Release makes GitHub render generated notes (merged PRs) on that same page.
+      #
+      # The tag can't come from github.ref_name: this job is triggered by a push to master and
+      # nebula creates the tag mid-job, so the ref is the branch. Derive it the same way
+      # scripts/deploy-latest.sh does. previous_tag pins the notes comparison base to the
+      # preceding tag - left to GitHub it defaults to the last *release*, and the existing
+      # release gaps (v4.16.0-v4.19.0, v4.22.0) would make the first run re-list old PRs.
+      - name: Determine release tag
+        id: release_tag
+        if: github.event_name != 'pull_request'
+        run: |
+          tag=$(git describe --abbrev=0 --tags)
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          echo "previous_tag=$(git describe --abbrev=0 --tags "${tag}^")" >> "$GITHUB_OUTPUT"
+
+      # Reruns are safe: the action updates an existing release rather than failing.
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v3
+        if: github.event_name != 'pull_request'
+        with:
+          tag_name: ${{ steps.release_tag.outputs.tag }}
+          name: ${{ steps.release_tag.outputs.tag }}
+          previous_tag: ${{ steps.release_tag.outputs.previous_tag }}
+          generate_release_notes: true
+
       # upload full test report (e.g. in case stdout / stderr is needed)
       - name: Upload test report
         uses: actions/upload-artifact@v7
