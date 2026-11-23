@@ -4,7 +4,7 @@ plugins {
     id 'java'
     id 'groovy'
     id 'com.netflix.nebula.release' version "21.2.0"
-    id 'com.netflix.nebula.maven-publish' version "23.2.0"
+    id 'com.netflix.nebula.maven-publish' version "24.0.0"
     id 'jacoco'
     id 'maven-publish'
 }
